@@ -61,7 +61,10 @@ module.exports = function(app) {
     .post(farmDetails.api_turnon_farm2_alarm);
   app.route('/api/farm/turnoff/alarm/:id')
     .post(farmDetails.api_turnoff_farm2_alarm);
-
+  app.route('/api/farm/set/alarm/:id/:value')
+    .post(farmDetails.api_set_farm2_alarm);
+  app.route('/api/farm/set/watering_complete/:id/:ws')
+    .post(farmDetails.api_set_watering_complete);
 
   app.route('/valveschedule')
     .get(farmDetails.list_all_schedule)

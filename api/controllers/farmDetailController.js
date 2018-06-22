@@ -1142,7 +1142,7 @@ exports.activate_farm_2 = function(req, res){
               line.lineGroupNotify("วันนี้ฟาร์ม" + farmObj.title + " ต้องการการให้น้ำเป็นเวลา " + next_w.hours + " ชั่วโมง " + next_w.mins + "นาที @" + time_now, farmObj.linegroup_token);
             }
             else{
-              line.lineGroupNotify("ตารางให้น้ำของฟาร์ม" + farmObj.title + " ครั้งต่อไปอีก " + next_w.days + " วัน @" + next_w.next_date, farmObj.linegroup_token);
+              line.lineGroupNotify("ตารางให้น้ำของฟาร์ม" + farmObj.title + " ครั้งต่อไปอีก " + next_w.days + " วัน @" + next_w.current_date, farmObj.linegroup_token);
             };
 
             var r_schedule = schedule.scheduleJob(rdate, function(){
@@ -1198,7 +1198,7 @@ exports.activate_farm_2 = function(req, res){
                   var time_now = moment().format();
                   console.log("Time to water for " + next_w.hours + " ชั่วโมง " + next_w.mins + " นาที");
                   line.lineGroupNotify("ฟาร์ม" + farmObj.title + " ต้องการการให้น้ำเป็นเวลา " + next_w.hours + " ชั่วโมง " + next_w.mins + "นาที @" + time_now, farmObj.linegroup_token);
-                  line.lineGroupNotify("กรุณาเปิด mobile application เพื่อควบคุมการให้น้ำและปิดการแจ้งเตือนนี้", farmObj.linegroup_token);
+                  line.lineGroupNotify("กรุณาเปิด mobile application เพื่อควบคุมการให้น้ำหรือปิดการแจ้งเตือนนี้", farmObj.linegroup_token);
 
 
 
@@ -1211,11 +1211,11 @@ exports.activate_farm_2 = function(req, res){
                       {
                         var time_now2 = moment().format();
                         line.lineGroupNotify("วันนี้ฟาร์ม" + fo.title + " ต้องการการให้น้ำเป็นเวลา " + ws.hours + " ชั่วโมง " + ws.mins + "นาที @" + time_now2, fo.linegroup_token);
-                        line.lineGroupNotify("กรุณาเปิด mobile application เพื่อควบคุมการให้น้ำและปิดการแจ้งเตือนนี้", fo.linegroup_token);
+                        line.lineGroupNotify("กรุณาเปิด mobile application เพื่อควบคุมการให้น้ำหรือปิดการแจ้งเตือนนี้", fo.linegroup_token);
                       }
                       else {
-                          line.lineGroupNotify("ปิดการแจ้งเตือนการให้น้ำของฟาร์ม" + fo.title, fo.linegroup_token);
-                          line.lineGroupNotify("ตารางให้น้ำของฟาร์ม" + fo.title + " ครั้งต่อไปอีก " + ws.days + " วัน @" + ws.next_date, fo.linegroup_token);
+                          //line.lineGroupNotify("ปิดการแจ้งเตือนการให้น้ำของฟาร์ม" + fo.title, fo.linegroup_token);
+                          //line.lineGroupNotify("ตารางให้น้ำของฟาร์ม" + fo.title + " ครั้งต่อไปอีก " + ws.days + " วัน @" + ws.next_date, fo.linegroup_token);
                           clearInterval(alarmIntervalObj);
                       }
                     });
@@ -1297,8 +1297,51 @@ exports.api_activate_farm_2 = function(req, res){
               line.lineGroupNotify("วันนี้ฟาร์ม" + farmObj.title + " ต้องการการให้น้ำเป็นเวลา " + next_w.hours + " ชั่วโมง " + next_w.mins + "นาที @" + time_now, farmObj.linegroup_token);
             }
             else{
-              line.lineGroupNotify("ตารางให้น้ำของฟาร์ม" + farmObj.title + " ครั้งต่อไปอีก " + next_w.days + " วัน @" + next_w.next_date, farmObj.linegroup_token);
+              line.lineGroupNotify("ตารางให้น้ำของฟาร์ม" + farmObj.title + " ครั้งต่อไปอีก " + next_w.days + " วัน @" + next_w.current_date, farmObj.linegroup_token);
             }
+
+            var r_schedule = schedule.scheduleJob(rdate, function(){
+              // check rain sensor before watering alarm to adjust the amount of watering
+              var sensorClient = new ThingSpeakClient();
+              var sensor_id = farmObj.rain_sensor_id;
+              var ref = db.ref('/sensor/' + sensor_id);
+              var async = require('async');
+
+              async.series([
+                function(callback){
+                  sensorClient.getLastEntryInChannelFeed(parseInt(sensor_id), {}, function(err, resp){
+                    if(typeof resp !== 'undefined')
+                    {
+                      db.ref('/sensor').child(sensor_id).update(resp);
+                      callback(null, 1);
+                    }
+                  });
+                },
+                function(callback){
+                  ref.once('value', function(snapshot) {
+                    var obj = JSON.parse(JSON.stringify(snapshot));
+                    obj.id = sensor_id;
+                    //res.redirect('../farm');
+                    //console.log("Edit farm[" + farm_id + "].......................................");
+                    callback(null, obj);
+                  });
+                }
+              ], function(err, results){
+                  //var moment = require('moment');
+                  //res.render('dashboard/sensor/show_sensor.ejs', {sensor: results[1], moment: moment});
+                  var rtime_now = moment().format();
+                  if(results[1].field1 != null)
+                  {
+                    console.log("Check rain sensor before alarm the today watering => ", results[1].field1);
+                    line.lineGroupNotify("ปริมาณน้ำฝนในฟาร์ม" + farmObj.title + " เท่ากับ " + results[1].field1 + " มม. @" + rtime_now, farmObj.linegroup_token);
+                  }
+                  else {
+                    console.log("Check rain sensor before alarm the today watering => FAILED");
+                    line.lineGroupNotify("ไม่สามารถอ่านค่าเซ็นเซอร์น้ำฝนในฟาร์ม" + farmObj.title + "ได้ @" + rtime_now, farmObj.linegroup_token);
+                  }
+              });
+            });
+
             var w_schedule = schedule.scheduleJob(date, function(){
               if(farmObj.alarm_start == "false")
               {
@@ -1310,7 +1353,7 @@ exports.api_activate_farm_2 = function(req, res){
                   var time_now = moment().format();
                   console.log("Time to water for " + next_w.hours + " ชั่วโมง " + next_w.mins + " นาที");
                   line.lineGroupNotify("ฟาร์ม" + farmObj.title + " ต้องการการให้น้ำเป็นเวลา " + next_w.hours + " ชั่วโมง " + next_w.mins + "นาที @" + time_now, farmObj.linegroup_token);
-                  line.lineGroupNotify("กรุณาเปิด mobile application เพื่อควบคุมการให้น้ำและปิดการแจ้งเตือนนี้", farmObj.linegroup_token);
+                  line.lineGroupNotify("กรุณาเปิด mobile application เพื่อควบคุมการให้น้ำหรือปิดการแจ้งเตือนนี้", farmObj.linegroup_token);
                   var alarmIntervalObj = setInterval(function(farm_id, ws){
                     var ref3 = db.ref('/farm/' + farm_id);
                     ref3.once('value', function(snapshot){
@@ -1320,11 +1363,11 @@ exports.api_activate_farm_2 = function(req, res){
                       {
                         var time_now2 = moment().format();
                         line.lineGroupNotify("วันนี้ฟาร์ม" + fo.title + " ต้องการการให้น้ำเป็นเวลา " + ws.hours + " ชั่วโมง " + ws.mins + "นาที @" + time_now2, fo.linegroup_token);
-                        line.lineGroupNotify("กรุณาเปิด mobile application เพื่อควบคุมการให้น้ำและปิดการแจ้งเตือนนี้", fo.linegroup_token);
+                        line.lineGroupNotify("กรุณาเปิด mobile application เพื่อควบคุมการให้น้ำหรือปิดการแจ้งเตือนนี้", fo.linegroup_token);
                       }
                       else {
-                          line.lineGroupNotify("ปิดการแจ้งเตือนการให้น้ำของฟาร์ม" + fo.title, fo.linegroup_token);
-                          line.lineGroupNotify("ตารางให้น้ำของฟาร์ม" + fo.title + " ครั้งต่อไปอีก " + ws.days + " วัน @" + ws.next_date, fo.linegroup_token);
+                          //line.lineGroupNotify("ปิดการแจ้งเตือนการให้น้ำของฟาร์ม" + fo.title, fo.linegroup_token);
+                          //line.lineGroupNotify("ตารางให้น้ำของฟาร์ม" + fo.title + " ครั้งต่อไปอีก " + ws.days + " วัน @" + ws.next_date, fo.linegroup_token);
                           clearInterval(alarmIntervalObj);
                       }
                     });
@@ -1370,76 +1413,134 @@ exports.api_activate_farm_2 = function(req, res){
     });
 };
 
-exports.turnon_farm2_alarm = function(req, res){
+exports.api_set_watering_complete = function(req, res){
   var farm_id = req.params.id;
-  var ref = db.ref('/farm/').child(farm_id).update({
-    alarm_start: "true",
-    need_watering: "true"
+  var ws = req.params.ws;
+  var ref = db.ref('/farm/' + farm_id + '/watering_schedule/' + ws + '/');
+  ref.update({
+    watering_complete: true
   }, function(err){
     if(err)
-    {
-      console.log("Turn on alarm of farm[" + farm_id + "...FAILED!");
-      //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
-      res.send("1211");
-    }
-    console.log("Turn on alarm of farm[" + farm_id + "...OK!");
-    //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
-    res.redirect("/farm/show/" + farm_id);
+      res.send("1241");
+    console.log("Update watering complete for farm[" + farm_id + "] at #" + ws);
+    res.send("1240");
+  });
+}
+
+
+exports.turnon_farm2_alarm = function(req, res){
+  var farm_id = req.params.id;
+  var ref = db.ref('/farm/'+farm_id);
+  ref.once('value', function(snapshot) {
+    var farmObj = JSON.parse(JSON.stringify(snapshot));
+    var ref = db.ref('/farm/').child(farm_id).update({
+      alarm_start: "true",
+      need_watering: "true"
+    }, function(err){
+      if(err)
+      {
+        console.log("Turn on alarm of farm[" + farm_id + "...FAILED!");
+        //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
+        res.send("1211");
+      }
+      console.log("Turn on alarm of farm[" + farm_id + "...OK!");
+      line.lineGroupNotify("ปิดการแจ้งเตือนการให้น้ำของฟาร์ม" + farmObj.title, farmObj.linegroup_token);
+      //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
+      res.redirect("/farm/show/" + farm_id);
+    });
   });
 }
 
 exports.turnoff_farm2_alarm = function(req, res){
   var farm_id = req.params.id;
-  var ref = db.ref('/farm/').child(farm_id).update({
-    alarm_start: "false",
-    need_watering: "false"
-  }, function(err){
-    if(err)
-    {
-      console.log("Turnoff alarm of farm[" + farm_id + "...FAILED!");
-      //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
-      res.send("1221");
-    }
-    console.log("Turnoff alarm of farm[" + farm_id + "...OK!");
-    //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
-    res.redirect("/farm/show/" + farm_id);
+  var ref = db.ref('/farm/'+farm_id);
+  ref.once('value', function(snapshot) {
+    var farmObj = JSON.parse(JSON.stringify(snapshot));
+
+    var ref = db.ref('/farm/').child(farm_id).update({
+      alarm_start: "false",
+      need_watering: "false"
+    }, function(err){
+      if(err)
+      {
+        console.log("Turnoff alarm of farm[" + farm_id + "...FAILED!");
+        //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
+        res.send("1221");
+      }
+      console.log("Turnoff alarm of farm[" + farm_id + "...OK!");
+      line.lineGroupNotify("ปิดการแจ้งเตือนการให้น้ำของฟาร์ม" + farmObj.title, farmObj.linegroup_token);
+      //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
+      res.redirect("/farm/show/" + farm_id);
+    });
+
   });
 }
 
-
 exports.api_turnon_farm2_alarm = function(req, res){
+  var line = require('../../line/line.js');
   var farm_id = req.params.id;
-  var ref = db.ref('/farm/').child(farm_id).update({
-    alarm_start: "true",
-    need_watering: "true"
-  }, function(err){
-    if(err)
-    {
-      console.log("Turn on alarm of farm[" + farm_id + "...FAILED!");
-      //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
-      res.send("1211");
-    }
-    console.log("Turn on alarm of farm[" + farm_id + "...OK!");
-    //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
-    res.send("1210");
+  var ref = db.ref('/farm/'+farm_id);
+  ref.once('value', function(snapshot) {
+    var farmObj = JSON.parse(JSON.stringify(snapshot));
+    var ref = db.ref('/farm/').child(farm_id).update({
+      alarm_start: "true",
+      need_watering: "true"
+    }, function(err){
+      if(err)
+      {
+        console.log("Turn on alarm of farm[" + farm_id + "...FAILED!");
+        //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
+        res.send("1211");
+      }
+      console.log("Turn on alarm of farm[" + farm_id + "...OK!");
+      line.lineGroupNotify("ปิดการแจ้งเตือนการให้น้ำของฟาร์ม" + farmObj.title, farmObj.linegroup_token);
+      //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
+      res.send("1210");
+    });
+
   });
 }
 
 exports.api_turnoff_farm2_alarm = function(req, res){
+  var line = require('../../line/line.js');
   var farm_id = req.params.id;
+  var ref = db.ref('/farm/'+farm_id);
+  ref.once('value', function(snapshot) {
+    var farmObj = JSON.parse(JSON.stringify(snapshot));
+    var ref = db.ref('/farm/').child(farm_id).update({
+      alarm_start: "false",
+      need_watering: "false"
+    }, function(err){
+      if(err)
+      {
+        console.log("Turnoff alarm of farm[" + farm_id + "...FAILED!");
+        //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
+        res.send("1221");
+      }
+      console.log("Turnoff alarm of farm[" + farm_id + "...OK!");
+      line.lineGroupNotify("ปิดการแจ้งเตือนการให้น้ำของฟาร์ม" + farmObj.title, farmObj.linegroup_token);
+      //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
+      res.send("1220");
+    });
+  });
+}
+
+exports.api_set_farm2_alarm = function(req, res){
+  var farm_id = req.params.id;
+  var alarm_time = req.params.value;
   var ref = db.ref('/farm/').child(farm_id).update({
-    alarm_start: "false",
-    need_watering: "false"
+    //alarm_time: alarm_time.substring(0,1) + ":" + alarm_time.substring(2,3) + ":00"
+    alarm_time: alarm_time
   }, function(err){
     if(err)
     {
-      console.log("Turnoff alarm of farm[" + farm_id + "...FAILED!");
+      console.log("Set new alarm of farm[" + farm_id + "...FAILED!");
       //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
-      res.send("1221");
+      res.send("1231");
     }
-    console.log("Turnoff alarm of farm[" + farm_id + "...OK!");
+    console.log("Set new alarm of farm[" + farm_id + "...OK!");
     //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
-    res.send("1220");
+    res.send("1230");
   });
 }
 

@@ -383,7 +383,8 @@ var computeWateringSchedule = function(farm_id, callback, res)
                                 days: b,
                                 hours: hours,
                                 mins: mins,
-                                total_mins: total_mins});
+                                total_mins: total_mins,
+                                watering_complete: false});
             console.log("วันที่ " + doy + " ของปี ต้องให้น้ำห่างกัน " + b + " วัน เป็นเวลา " + hours + " ชั่วโมง " + mins + " นาที รวม " + total_mins + " นาที");
             console.log("day[" + (i+1) + "] of " + days + " @" + next_watering[next_watering.length - 1].next_date);
             i = i+b;
