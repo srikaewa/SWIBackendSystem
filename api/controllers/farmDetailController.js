@@ -1292,6 +1292,7 @@ exports.api_activate_farm_2 = function(req, res){
             var next_alarm = moment(farmObj.alarm_time, "HH:mm:ss");
             console.log("Next watering => " + next_w_date.format("YYYY") + ", " + next_w_date.format("MM") + ", " + next_w_date.format("DD") + ", " + next_alarm.format("HH") + ", " + next_alarm.format("mm") + ", " + next_alarm.format("ss"));
             var date = new Date(next_w_date.format("YYYY"), next_w_date.subtract(1, 'months').format("MM"), next_w_date.format("DD"), next_alarm.format("HH"), next_alarm.format("mm") , next_alarm.format("ss"));
+            var rdate = new Date(next_w_date.format("YYYY"), next_w_date.subtract(1, 'months').format("MM"), next_w_date.format("DD"), next_alarm.format("HH"), next_alarm.subtract(1, 'minutes').format("mm") , next_alarm.format("ss"));
             if(next_w.is_today)
             {
               line.lineGroupNotify("วันนี้ฟาร์ม" + farmObj.title + " ต้องการการให้น้ำเป็นเวลา " + next_w.hours + " ชั่วโมง " + next_w.mins + "นาที @" + time_now, farmObj.linegroup_token);
