@@ -1417,6 +1417,7 @@ exports.api_activate_farm_2 = function(req, res){
 exports.api_set_watering_complete = function(req, res){
   var farm_id = req.params.id;
   var ws = req.params.ws;
+  console.log("Updating watering complete for farm[" + farm_id + "] at #" + ws + "...");
   var ref = db.ref('/farm/' + farm_id + '/watering_schedule/' + ws + '/');
   ref.update({
     watering_complete: true

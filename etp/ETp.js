@@ -367,7 +367,13 @@ var computeWateringSchedule = function(farm_id, callback, res)
               console.log("จำนวนวันที่ผ่านมา => " + i + ", จำนวนวันที่ต้องรดน้ำครั้งต่อไป => " + b + ", จำนวนวันทั้งหมดที่ต้องพิจารณา => " + days);
               break;
             }
-            var accumulate_ETc = 0;
+
+            var time_to_water = Math.ceil(a/farm_total_flowrate_per_rai);
+            var hours = parseInt(time_to_water);
+            var mins = Math.ceil((time_to_water - hours)*60);
+            var total_mins = hours*60 + mins;
+
+            /*var accumulate_ETc = 0;
             for(var j=0;j < b;j++)
             {
               var pweek = Math.floor((i+j)/7);
@@ -377,7 +383,7 @@ var computeWateringSchedule = function(farm_id, callback, res)
             console.log("accumulated ETc = " + accumulate_ETc);
             var hours = parseInt(c);
             var mins = Math.ceil((c - hours)*60);
-            var total_mins = hours*60 + mins;
+            var total_mins = hours*60 + mins;*/
             next_watering.push({current_date: start_date.dayOfYear(doy).format("YYYY-MM-DD"),
                                 next_date:start_date.dayOfYear(doy+b).format("YYYY-MM-DD"),
                                 days: b,
