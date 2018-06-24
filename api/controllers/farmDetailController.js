@@ -587,7 +587,7 @@ exports.update_a_farm = function(req, res) {
                       if(err)
                         res.send("704");
                       else
-                        res.redirect('/farm');
+                        res.redirect('/farm/show/' + farm_id);
                   });
                 });
               };
@@ -1136,7 +1136,8 @@ exports.activate_farm_2 = function(req, res){
             var next_alarm = moment(farmObj.alarm_time, "HH:mm:ss");
             console.log("Next watering => " + next_w_date.format("YYYY") + ", " + next_w_date.format("MM") + ", " + next_w_date.format("DD") + ", " + next_alarm.format("HH") + ", " + next_alarm.format("mm") + ", " + next_alarm.format("ss"));
             var date = new Date(next_w_date.format("YYYY"), next_w_date.subtract(1, 'months').format("MM"), next_w_date.format("DD"), next_alarm.format("HH"), next_alarm.format("mm") , next_alarm.format("ss"));
-            var rdate = new Date(next_w_date.format("YYYY"), next_w_date.subtract(1, 'months').format("MM"), next_w_date.format("DD"), next_alarm.format("HH"), next_alarm.subtract(1, 'minutes').format("mm") , next_alarm.format("ss"));
+            var rdate = new Date(next_w_date.format("YYYY"), next_w_date.format("MM"), next_w_date.format("DD"), next_alarm.format("HH"), next_alarm.subtract(1, 'minutes').format("mm") , next_alarm.format("ss"));
+            console.log("Date => " + date + ", RDate => " + rdate);
             if(next_w.is_today)
             {
               line.lineGroupNotify("วันนี้ฟาร์ม" + farmObj.title + " ต้องการการให้น้ำเป็นเวลา " + next_w.hours + " ชั่วโมง " + next_w.mins + "นาที @" + time_now, farmObj.linegroup_token);
@@ -1144,6 +1145,7 @@ exports.activate_farm_2 = function(req, res){
             else{
               line.lineGroupNotify("ตารางให้น้ำของฟาร์ม" + farmObj.title + " ครั้งต่อไปอีก " + next_w.days + " วัน @" + next_w.current_date, farmObj.linegroup_token);
             };
+
 
             var r_schedule = schedule.scheduleJob(rdate, function(){
               // check rain sensor before watering alarm to adjust the amount of watering
@@ -1292,7 +1294,8 @@ exports.api_activate_farm_2 = function(req, res){
             var next_alarm = moment(farmObj.alarm_time, "HH:mm:ss");
             console.log("Next watering => " + next_w_date.format("YYYY") + ", " + next_w_date.format("MM") + ", " + next_w_date.format("DD") + ", " + next_alarm.format("HH") + ", " + next_alarm.format("mm") + ", " + next_alarm.format("ss"));
             var date = new Date(next_w_date.format("YYYY"), next_w_date.subtract(1, 'months').format("MM"), next_w_date.format("DD"), next_alarm.format("HH"), next_alarm.format("mm") , next_alarm.format("ss"));
-            var rdate = new Date(next_w_date.format("YYYY"), next_w_date.subtract(1, 'months').format("MM"), next_w_date.format("DD"), next_alarm.format("HH"), next_alarm.subtract(1, 'minutes').format("mm") , next_alarm.format("ss"));
+            var rdate = new Date(next_w_date.format("YYYY"), next_w_date.format("MM"), next_w_date.format("DD"), next_alarm.format("HH"), next_alarm.subtract(1, 'minutes').format("mm") , next_alarm.format("ss"));
+            console.log("Date => " + date + ", RDate => " + rdate);
             if(next_w.is_today)
             {
               line.lineGroupNotify("วันนี้ฟาร์ม" + farmObj.title + " ต้องการการให้น้ำเป็นเวลา " + next_w.hours + " ชั่วโมง " + next_w.mins + "นาที @" + time_now, farmObj.linegroup_token);
