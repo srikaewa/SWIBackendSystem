@@ -367,9 +367,9 @@ var computeWateringSchedule = function(farm_id, callback, res)
               console.log("จำนวนวันที่ผ่านมา => " + i + ", จำนวนวันที่ต้องรดน้ำครั้งต่อไป => " + b + ", จำนวนวันทั้งหมดที่ต้องพิจารณา => " + days);
               break;
             }
-
-            var time_to_water = Math.ceil(a/farm_total_flowrate_per_rai);
-            var hours = parseInt(time_to_water);
+            console.log("a = " + a + " farm total flowrate per rai = " + farm_total_flowrate_per_rai);
+            var time_to_water = a/farm_total_flowrate_per_rai;
+            var hours = Math.floor(time_to_water);
             var mins = Math.ceil((time_to_water - hours)*60);
             var total_mins = hours*60 + mins;
 
@@ -391,7 +391,7 @@ var computeWateringSchedule = function(farm_id, callback, res)
                                 mins: mins,
                                 total_mins: total_mins,
                                 watering_complete: false});
-            console.log("วันที่ " + doy + " ของปี ต้องให้น้ำห่างกัน " + b + " วัน เป็นเวลา " + hours + " ชั่วโมง " + mins + " นาที รวม " + total_mins + " นาที");
+            console.log("วันที่ " + doy + " ของปี ต้องให้น้ำห่างกัน " + b + " วัน เป็นเวลา " + time_to_water + " ชม. หรือ " + hours + " ชั่วโมง " + mins + " นาที รวม " + total_mins + " นาที");
             console.log("day[" + (i+1) + "] of " + days + " @" + next_watering[next_watering.length - 1].next_date);
             i = i+b;
             console.log("next day = " + i);
