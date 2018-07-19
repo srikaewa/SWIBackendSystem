@@ -181,7 +181,7 @@ function post2valve(path, params, method) {
 
 <div id="content">
 <div id="content-header">
-  <div id="breadcrumb"> <a href="index.html" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a> <a href="#" class="tip-bottom">จัดการวาล์วเปิดปิดน้ำ</a> <a href="#" class="current">แก้ไขข้อมูลวาล์วเปิดปิดน้ำ</a> </div>
+  <div id="breadcrumb"> <a href="/dashboard" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a> <a href="/valve/show/<%= valve.id %>" class="tip-bottom">วาล์วเปิดปิดน้ำหมายเลข <%= valve.id %></a> <a href="#" class="current">แก้ไขข้อมูลวาล์วเปิดปิดน้ำ</a> </div>
 </div>
 <div class="container-fluid">
   <div class="row-fluid">
@@ -236,7 +236,7 @@ function post2valve(path, params, method) {
               <label for="message-text" class="col-form-label">ช่วงเวลาอ่านค่า</label>
               <input type="text" class="form-control" id="edit-valve-sampling-time" name="edit_valve_sampling_time" placeholder="15" value="<%= valve.sampling_time %>"> นาที
             </div>-->
-            <button type="submit" class="btn btn-primary">บันทึก</button> <button type="button" class="btn btn-default" onclick="window.history.back();">ยกเลิก</button>
+            <button type="button" class="btn btn-primary" onclick="location.href='/valve/show/<%= valve.id %>'"><i class="icon-minus-sign"></i> ยกเลิก</button> <button type="submit" class="btn btn-warning"><i class="icon-edit"></i> บันทึก</button>
           </form>
       </div>
     </div>

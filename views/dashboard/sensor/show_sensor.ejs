@@ -90,27 +90,27 @@ function post2sensor(path, params, method) {
 
 <!--sidebar-menu-->
 
-<div id="sidebar"> <a href="#" class="visible-phone"><i class="icon icon-list"></i>Forms</a>
+<div id="sidebar"> <a href="#" class="visible-phone"><i class="icon icon-list"></i></a>
   <ul>
-    <li><a href="#"><i class="icon icon-home"></i> <span>Dashboard</span></a> </li>
-    <li class="submenu"><a href="#"><i class="fa fa-pagelines"></i> <span>รายการฟาร์ม</span><span class="label label-important">4</span></a></a>
+    <li><a href="/dashboard"><i class="icon icon-home"></i> <span>Dashboard</span></a> </li>
+    <li class="submenu"><a href="#"><i class="icon icon-leaf"></i></i> <span>รายการฟาร์ม</span><span class="label label-important">3</span></a>
       <ul>
-        <li><a href="farm">ฟาร์มทั้งหมด</a></li>
-        <li><a href="farm/1">ฟาร์มระบบเซ็นเซอร์</a></li>
-        <li><a href="farm/2">ฟาร์มระบบน้ำหยด</a></li>
-        <li><a href="farm/3">ฟาร์มระบบเซ็นเซอร์ + น้ำหยด</a></li>
+        <li><a href="/farm">ฟาร์มทั้งหมด</a></li>
+        <li><a href="/farm/1">&nbsp;&nbsp;- ฟาร์มเซ็นเซอร์</a></li>
+        <li><a href="/farm/2">&nbsp;&nbsp;- ฟาร์ม ETp</a></li>
       </ul>
     </li>
     <li class="submenu active"><a href="#"><i class="icon icon-wrench"></i> <span>จัดการฮาร์ดแวร์</span><span class="label label-important">3</span></a>
       <ul>
-        <li><a href="mainpump">รายการปั๊มน้ำ</a></li>
-        <li><a href="valve">รายการวาล์วเปิดปิดน้ำ</a></li>
-        <li><a href="sensor">รายการเซ็นเซอร์</a></li>
+        <li><a href="/mainpump">รายการปั๊มน้ำ</a></li>
+        <li><a href="/valve">รายการวาล์วเปิดปิดน้ำ</a></li>
+        <li><a href="/sensor">รายการเซ็นเซอร์</a></li>
       </ul>
     </li>
-    <li> <a href="#"><i class="icon icon-user"></i> <span>จัดการประเภทดิน</span></a> </li>
-    <li> <a href="#"><i class="icon icon-user"></i> <span>จัดการประเภทพืช</span></a> </li>
-    <li> <a href="#"><i class="icon icon-user"></i> <span>จัดการผู้ใช้งาน</span></a> </li>
+    <!--li> <a href="/valveschedule"><i class="icon icon-th"></i> <span>จัดการเปิดปิดวาล์วน้ำ</span></a> </li-->
+    <li> <a href="/soil"><i class="icon icon-globe"></i> <span>จัดการประเภทดิน</span></a> </li>
+    <li> <a href="/plant"><i class="icon icon-lemon"></i> <span>จัดการประเภทพืช</span></a> </li>
+    <li> <a href="/user"><i class="icon icon-user"></i> <span>จัดการผู้ใช้งาน</span></a> </li>
   </ul>
 </div>
 
@@ -124,7 +124,7 @@ function post2sensor(path, params, method) {
   <div class="row-fluid">
     <div class="span6">
       <div class="widget-box">
-        <div class="widget-title"> <span class="icon"> <i class="icon-circle-arrow-left" onclick="window.history.back();"></i> </span>
+        <div class="widget-title"> <span class="icon"> <a href="#"><i class="icon-circle-arrow-left" onclick="location.href='/sensor/'"></i></a></span>
           <h5>ข้อมูลเซ็นเซอร์</h5> </div>
         <div class="widget-content nopadding">
           <table class="table table-bordered table-striped">
@@ -194,7 +194,9 @@ function post2sensor(path, params, method) {
                           <h6 class="modal-title">ค่าเซ็นเซอร์หมายเลข <%= sensor.id %> #1</h6>
                         </div>
                         <div class="modal-body">
+                          <center>
                           <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/<%= sensor.id %>/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
+                        </center>
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -237,7 +239,7 @@ function post2sensor(path, params, method) {
           </table>
         </div>
       </div>
-      <button class="btn btn-sm btn-warning" onclick="post2sensor('../edit/<%= sensor.id %>',{});" href="#">แก้ไข</button> <button type="button" class="btn btn-default" onclick="window.history.back();">กลับ</button>
+      <button type="button" class="btn btn-primary" onclick="location.href='/sensor/'"><i class="icon-circle-arrow-left"></i> กลับ</button> <button class="btn btn-sm btn-warning" onclick="post2sensor('../edit/<%= sensor.id %>',{});" href="#"><i class="icon-edit"></i> แก้ไข</button>
   </div>
 </div>
 </div>
@@ -250,20 +252,20 @@ function post2sensor(path, params, method) {
 <!--end-Footer-part-->
 <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script> -->
-<script src="../../_js/jquery.min.js"></script>
-<script src="../../_js/bootstrap.min.js"></script>
-<script src="../../_js/jquery.ui.custom.js"></script>
-<script src="../../_js/bootstrap-colorpicker.js"></script>
-<script src="../../_js/bootstrap-datepicker.js"></script>
+<script src="/_js/jquery.min.js"></script>
+<script src="/_js/bootstrap.min.js"></script>
+<script src="/_js/jquery.ui.custom.js"></script>
+<script src="/_js/bootstrap-colorpicker.js"></script>
+<script src="/_js/bootstrap-datepicker.js"></script>
 <!--<script src="js/jquery.toggle.buttons.js"></script> -->
-<script src="../../_js/jquery.uniform.js"></script>
-<script src="../../_js/masked.js"></script>
-<script src="../../_js/select2.min.js"></script>
-<script src="../../_js/matrix.form_common.js"></script>
-<script src="../../_js/matrix.js"></script>
-<script src="../../_js/wysihtml5-0.3.0.js"></script>
-<script src="../../_js/jquery.peity.min.js"></script>
-<script src="../../_js/bootstrap-wysihtml5.js"></script>
+<script src="/_js/jquery.uniform.js"></script>
+<script src="/_js/masked.js"></script>
+<script src="/_js/select2.min.js"></script>
+<script src="/_js/matrix.form_common.js"></script>
+<script src="/_js/matrix.js"></script>
+<script src="/_js/wysihtml5-0.3.0.js"></script>
+<script src="/_js/jquery.peity.min.js"></script>
+<script src="/_js/bootstrap-wysihtml5.js"></script>
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 <!--<script src="https://cdn.jsdelivr.net/jquery/1.11.3/jquery.min.js"></script>-->
 <script>

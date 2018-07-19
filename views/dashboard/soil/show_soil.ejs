@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="/_css/bootstrap-wysihtml5.css" />
 <link href="/_font-awesome/css/font-awesome.css" rel="stylesheet" />
 <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,800' rel='stylesheet' type='text/css'>
-<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<!--link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet"-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
@@ -92,25 +92,25 @@ function post2soil(path, params, method) {
 
 <div id="sidebar"> <a href="#" class="visible-phone"><i class="icon icon-list"></i></a>
   <ul>
-    <li><a href="#"><i class="icon icon-home"></i> <span>Dashboard</span></a> </li>
-    <li class="submenu"><a href="#"><i class="fa fa-pagelines"></i> <span>รายการฟาร์ม</span><span class="label label-important">4</span></a></a>
+    <li><a href="dashboard"><i class="icon icon-home"></i> <span>Dashboard</span></a> </li>
+    <li class="submenu"><a href="#"><i class="icon icon-leaf"></i></i> <span>รายการฟาร์ม</span><span class="label label-important">3</span></a>
       <ul>
-        <li><a href="farm">ฟาร์มทั้งหมด</a></li>
-        <li><a href="farm/1">ฟาร์มระบบเซ็นเซอร์</a></li>
-        <li><a href="farm/2">ฟาร์มระบบน้ำหยด</a></li>
-        <li><a href="farm/3">ฟาร์มระบบเซ็นเซอร์ + น้ำหยด</a></li>
+        <li><a href="/farm">ฟาร์มทั้งหมด</a></li>
+        <li><a href="/farm/1">&nbsp;&nbsp;- ฟาร์มเซ็นเซอร์</a></li>
+        <li><a href="/farm/2">&nbsp;&nbsp;- ฟาร์ม ETp</a></li>
       </ul>
     </li>
     <li class="submenu"><a href="#"><i class="icon icon-wrench"></i> <span>จัดการฮาร์ดแวร์</span><span class="label label-important">3</span></a>
       <ul>
-        <li><a href="mainpump">รายการปั๊มน้ำ</a></li>
-        <li><a href="valve">รายการวาล์วเปิดปิดน้ำ</a></li>
-        <li><a href="sensor">รายการเซ็นเซอร์</a></li>
+        <li><a href="/mainpump">รายการปั๊มน้ำ</a></li>
+        <li><a href="/valve">รายการวาล์วเปิดปิดน้ำ</a></li>
+        <li><a href="/sensor">รายการเซ็นเซอร์</a></li>
       </ul>
     </li>
+    <!--li> <a href="/valveschedule"><i class="icon icon-th"></i> <span>จัดการเปิดปิดวาล์วน้ำ</span></a> </li-->
     <li class="active"> <a href="/soil"><i class="icon icon-globe"></i> <span>จัดการประเภทดิน</span></a> </li>
-    <li> <a href="#"><i class="icon icon-lemon"></i> <span>จัดการประเภทพืช</span></a> </li>
-    <li> <a href="#"><i class="icon icon-user"></i> <span>จัดการผู้ใช้งาน</span></a> </li>
+    <li> <a href="/plant"><i class="icon icon-lemon"></i> <span>จัดการประเภทพืช</span></a> </li>
+    <li> <a href="/user"><i class="icon icon-user"></i> <span>จัดการผู้ใช้งาน</span></a> </li>
   </ul>
 </div>
 
@@ -118,14 +118,14 @@ function post2soil(path, params, method) {
 
 <div id="content">
 <div id="content-header">
-  <div id="breadcrumb"> <a href="/dashboard" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a> <a href="/soil" class="tip-bottom">รายการประเภทดิน</a> <a href="#" class="current"> ข้อมูลดิน</a></div>
+  <div id="breadcrumb"> <a href="/dashboard" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a> <a href="/soil" class="tip-bottom">รายการประเภทดิน</a> <a href="#" class="current"> ข้อมูล<%= soil.title_thai %></a></div>
 </div>
 <div class="container-fluid">
   <div class="row-fluid">
     <div class="span6">
       <div class="widget-box">
-        <div class="widget-title"> <span class="icon"> <i class="icon-circle-arrow-left" onclick="window.history.back();"></i> </span>
-          <h5>ข้อมูลดิน</h5> </div>
+        <div class="widget-title"> <span class="icon"> <a href="#"><i class="icon-circle-arrow-left" onclick="location.href='/soil'"></i></a> </span>
+          <h5>ข้อมูล<%= soil.title_thai %></h5> </div>
         <div class="widget-content nopadding">
           <table class="table table-bordered table-striped">
 <!--            <thead>
@@ -165,7 +165,7 @@ function post2soil(path, params, method) {
           </table>
         </div>
       </div>
-      <button class="btn btn-sm btn-warning" onclick="post2soil('../edit/<%= soil.id %>',{});" href="#">แก้ไข</button> <button type="button" class="btn btn-default" onclick="window.history.back();">กลับ</button>
+      <button type="button" class="btn btn-primary" onclick="location.href='/soil'"><i class="icon-circle-arrow-left"></i> กลับ</button> <button class="btn btn-sm btn-warning" onclick="post2soil('../edit/<%= soil.id %>',{});" href="#"><i class="icon-edit"></i> แก้ไข</button>
   </div>
 </div>
 </div>

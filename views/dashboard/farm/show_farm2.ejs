@@ -15,10 +15,15 @@
 <link rel="stylesheet" href="/_css/matrix-media.css" />
 <link rel="stylesheet" href="/_css/custom.css" />
 <link rel="stylesheet" href="/_css/bootstrap-wysihtml5.css" />
+<link rel="stylesheet" href="/_css/jquery.gritter.css" />
 <link href="/_font-awesome/css/font-awesome.css" rel="stylesheet" />
 <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,800' rel='stylesheet' type='text/css'>
-<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<!--link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet"-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.35.4/css/bootstrap-dialog.min.css">
+<script src="/_js/jquery.min.js"></script>
+<script src="/_js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.35.4/js/bootstrap-dialog.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
 <script>
   // Initialize Firebase
@@ -118,7 +123,7 @@ function post2farm(path, params, method) {
 <!--top-Header-menu-->
 <div id="user-nav" class="navbar navbar-inverse">
   <ul class="nav">
-    <li  class="dropdown" id="profile-messages" ><a title="" href="#" data-toggle="dropdown" data-target="#profile-messages" class="dropdown-toggle"><i class="icon icon-user"></i>  <span id="user-email" class="text"></span><b class="caret"></b></a>
+    <li class="dropdown" id="profile-messages" ><a title="" href="#" data-toggle="dropdown" data-target="#profile-messages" class="dropdown-toggle"><i class="icon icon-user"></i>  <span class="text" id="user-email"></span><b class="caret"></b></a>
       <ul class="dropdown-menu">
         <li><a href="#"><i class="icon-user"></i> My Profile</a></li>
         <li class="divider"></li>
@@ -139,7 +144,7 @@ function post2farm(path, params, method) {
       </ul>
     </li>
     <li class=""><a title="" href="#"><i class="icon icon-cog"></i> <span class="text">Settings</span></a></li>
-    <li class=""><a title="" href="login.html"><i class="icon icon-share-alt"></i> <span class="text">Logout</span></a></li>
+    <li class=""><a title=""  href="javascript:UserAccount.UserSignOutOption()"><i class="icon icon-share-alt"></i> <span class="text">Logout</span></a></li>
   </ul>
 </div>
 
@@ -152,27 +157,27 @@ function post2farm(path, params, method) {
 
 <!--sidebar-menu-->
 
-<div id="sidebar"> <a href="#" class="visible-phone"><i class="icon icon-list"></i>Forms</a>
+<div id="sidebar"> <a href="#" class="visible-phone"><i class="icon icon-list"></i></a>
   <ul>
-    <li><a href="dashboard"><i class="icon icon-home"></i> <span>Dashboard</span></a> </li>
-    <li class="submenu active"><a href="#"><i class="icon icon-leaf"></i></i> <span>รายการฟาร์ม</span><span class="label label-important">4</span></a>
+    <li><a href="/dashboard"><i class="icon icon-home"></i> <span>Dashboard</span></a> </li>
+    <li class="submenu active"><a href="#"><i class="icon icon-leaf"></i> <span>รายการฟาร์ม</span><span class="label label-important">3</span></a>
       <ul>
-        <li><a href="farm">ฟาร์มทั้งหมด</a></li>
-        <li><a href="farm/1">ฟาร์มให้น้ำเซ็นเซอร์</a></li>
-        <li><a href="farm/2">ฟาร์มระบบน้ำหยด</a></li>
-        <li><a href="farm/3">ฟาร์มระบบเซ็นเซอร์ + น้ำหยด</a></li>
+        <li><a href="/farm">ฟาร์มทั้งหมด</a></li>
+        <li><a href="/farm/1">&nbsp;&nbsp;- ฟาร์มเซ็นเซอร์</a></li>
+        <li><a href="/farm/2">&nbsp;&nbsp;- ฟาร์ม ETp</a></li>
       </ul>
     </li>
     <li class="submenu"><a href="#"><i class="icon icon-wrench"></i> <span>จัดการฮาร์ดแวร์</span><span class="label label-important">3</span></a>
       <ul>
-        <li><a href="mainpump">รายการปั๊มน้ำ</a></li>
-        <li><a href="valve">รายการวาล์วเปิดปิดน้ำ</a></li>
-        <li><a href="sensor">รายการเซ็นเซอร์</a></li>
+        <li><a href="/mainpump">รายการปั๊มน้ำ</a></li>
+        <li><a href="/valve">รายการวาล์วเปิดปิดน้ำ</a></li>
+        <li><a href="/sensor">รายการเซ็นเซอร์</a></li>
       </ul>
     </li>
-    <li> <a href="#"><i class="icon icon-globe"></i> <span>จัดการประเภทดิน</span></a> </li>
-    <li> <a href="#"><i class="icon icon-lemon"></i> <span>จัดการประเภทพืช</span></a> </li>
-    <li> <a href="#"><i class="icon icon-user"></i> <span>จัดการผู้ใช้งาน</span></a> </li>
+    <!--li> <a href="/valveschedule"><i class="icon icon-th"></i> <span>จัดการเปิดปิดวาล์วน้ำ</span></a> </li-->
+    <li> <a href="/soil"><i class="icon icon-globe"></i> <span>จัดการประเภทดิน</span></a> </li>
+    <li> <a href="/plant"><i class="icon icon-lemon"></i> <span>จัดการประเภทพืช</span></a> </li>
+    <li> <a href="/user"><i class="icon icon-user"></i> <span>จัดการผู้ใช้งาน</span></a> </li>
   </ul>
 </div>
 
@@ -189,7 +194,7 @@ function post2farm(path, params, method) {
       <div class="widget-box">
         <div class="widget-title">
           <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#tab1"> ข้อมูลฟาร์ม</a></li>
+            <li class="active"><a data-toggle="tab" href="#tab1"> ข้อมูลฟาร์ม <i class="icon-edit" onclick="post2farm('../edit/<%= farm.id %>',{});"></i></a></li>
             <li><a data-toggle="tab" href="#tab2">ตารางให้น้ำ</a></li>
             <li><a data-toggle="tab" href="#tab3">แผงควบคุม</a></li>
             <!--<li><a data-toggle="tab" href="#tab3">แผงควบคุม</a></li>-->
@@ -207,6 +212,14 @@ function post2farm(path, params, method) {
                     <tr class="even gradeC">
                       <td>ชื่อฟาร์ม</td>
                       <td><%= farm.title %></td>
+                    </tr>
+                    <tr class="even gradeA">
+                      <td>ประเภทพืช</td>
+                      <td><% for(var s=0;s < plants.length;s++) { %>
+                            <% if(farm.plant_id == plants[s].id) { %>
+                                <%= plants[s].title %>
+                            <% } %>
+                          <% } %> </td>
                     </tr>
                     <tr class="odd gradeA">
                       <td>รายละเอียด</td>
@@ -255,14 +268,6 @@ function post2farm(path, params, method) {
                           <%= soils[s].title_thai %> (ค่าการอุ้มน้ำได้ <%= soils[s].water_holding_capacity %> มม.ต่อดิน 1 ซม.)
                         <% } %>
                       <% } %></td>
-                    </tr>
-                    <tr class="even gradeA">
-                      <td>ประเภทพืช</td>
-                      <td><% for(var s=0;s < plants.length;s++) { %>
-                            <% if(farm.plant_id == plants[s].id) { %>
-                                <%= plants[s].title %>
-                            <% } %>
-                          <% } %> </td>
                     </tr>
                     <tr class="odd gradeA">
                       <td>วันที่เริ่มปลูก</td>
@@ -316,6 +321,8 @@ function post2farm(path, params, method) {
                 </table>
             </div>
           </div>
+
+
           <div id="tab2" class="tab-pane">
             <div class="widget-box">
               <div class="widget-title"><span class="icon"><i class="icon-tasks"></i></span>
@@ -347,7 +354,7 @@ function post2farm(path, params, method) {
           </div>
           <div id="tab3" class="tab-pane">
             <div class="widget-box">
-              <div class="widget-title"><span class="icon"><i class="icon-tasks"></i></span>
+              <div class="widget-title"><span class="icon"><i class="icon-cogs"></i></span>
                 <h5>Control Panel</h5>
               </div>
 
@@ -355,9 +362,15 @@ function post2farm(path, params, method) {
                 <table class="table table-borderless table-striped">
                   <tbody>
                     <tr class="odd gradeX" >
-                      <td>หมายเลขเซ็นเซอร์น้ำฝน - <a href="/sensor/show/<%= farm.rain_sensor_id %>"><%= farm.rain_sensor_id %> <i class="icon-eye-open"></i></a></td>
+                      <td>หมายเลขเซ็นเซอร์น้ำฝน</td>
                       <td style="text-align: center;">
-                          ปริมาณน้ำฝนล่าสุด <%= sensor.field1 %> %
+                          <a href="/sensor/show/<%= farm.rain_sensor_id %>"><%= farm.rain_sensor_id %> <i class="icon-eye-open"></i></a>
+                      </td>
+                    </tr>
+                    <tr class="odd gradeX" >
+                      <td>ปริมาณน้ำฝนล่าสุด</td>
+                      <td style="text-align: center;">
+                          <% if(sensor.field1 != null) {%> <%= sensor.field1 %> มม. <% } else { %> - <% } %>
                       </td>
                     </tr>
                     <tr>
@@ -365,38 +378,77 @@ function post2farm(path, params, method) {
                       <td style="text-align: center;"><%= farm.rain_last_checked %></td>
                     </tr>
                     <tr class="odd gradeX">
-                      <td>หมายเลขปั๊มน้ำ - <a href="/mainpump/show/<%= farm.mainpump_id %>"><%= farm.mainpump_id %> <i class="icon-eye-open"></i></a></td>
+                      <td>หมายเลขปั๊มน้ำ</td>
                       <td style="text-align: center;">
-                          <% if(mainpump.activated == 'true') { %>
-                            <button class="btn btn-success btn-mini">เปิด</button>
-                          <% }else{ %>
-                            <button class="btn btn-danger btn-mini">ปิด</button>
-                          <% } %>
+                          <a href="/mainpump/show/<%= farm.mainpump_id %>"><%= farm.mainpump_id %> <i class="icon-eye-open"></i></a>
                       </td>
                     </tr>
                     <tr class="even gradeC">
-                      <td>หมายเลขวาล์วเปิดปิดน้ำ #1 - <a href="/valve/show/<%= farm.valve_1_id %>"><%= farm.valve_1_id %><i class="icon-eye-open"></i></a></td>
+                      <td>หมายเลขวาล์วเปิดปิดน้ำ #1</td>
                       <td style="text-align: center;">
-                          <% if(valve1.activated == 'true') { %>
-                            <button class="btn btn-success btn-mini">เปิด</button>
-                          <% }else{ %>
-                            <button class="btn btn-danger btn-mini">ปิด</button>
-                          <% } %>
+                          <a href="/valve/show/<%= farm.valve_1_id %>"><%= farm.valve_1_id %><i class="icon-eye-open"></i></a>
                       </td>
                     </tr>
                     <tr class="odd gradeX">
-                      <td>หมายเลขวาล์วเปิดปิดน้ำ #2 - <a href="/valve/show/<%= farm.valve_2_id %>"><%= farm.valve_2_id %><i class="icon-eye-open"></i></a></td>
+                      <td>หมายเลขวาล์วเปิดปิดน้ำ #2</td>
                       <td style="text-align: center;">
-                          <% if(valve2.activated == 'true') { %>
-                            <button class="btn btn-success btn-mini">เปิด</button>
-                          <% }else{ %>
-                            <button class="btn btn-danger btn-mini">ปิด</button>
-                          <% } %>
+                          <a href="/valve/show/<%= farm.valve_2_id %>"><%= farm.valve_2_id %><i class="icon-eye-open"></i></a>
                       </td>
                     </tr>
                     <tr class="odd gradeX">
                       <td>การแจ้งเตือนการให้น้ำ</td>
                       <td style="text-align: center;">
+                        <button <% if(farm.activated == 'false') {%>disabled <% } %> id="button-farm-alarm" class="btn <% if(farm.alarm_start == 'false') {%>btn-danger <% }else{ %> btn-success <% } %>"><% if(farm.alarm_start == 'false') {%> <span class="icon-remove"></span> ปิด <% }else{ %><span class="icon-ok"></span> เปิด <% } %></button>
+                        <script>
+                        $("#button-farm-alarm").on("click", function(event) {
+                            //event.preventDefault();
+                            BootstrapDialog.show({
+                              message: '<% if(farm.alarm_start == 'false') {%>เปิด<% }else{ %>ปิด<% } %>การแจ้งเตือนการให้น้ำ?',
+                              type: BootstrapDialog.TYPE_WARNING,
+                              buttons: [{
+                                  label: 'ยกเลิก',
+                                  action: function(dialogRef){
+                                      dialogRef.close();
+                                        }
+                                      },
+                                {
+                                icon: 'glyphicon glyphicon-check',
+                                label: 'ตกลง',
+                                cssClass: 'btn-warning',
+                                autospin: true,
+                                action: function(dialogRef){
+                                    dialogRef.enableButtons(false);
+                                    dialogRef.setClosable(false);
+                                    dialogRef.getModalBody().html('ระบบกำลังทำการ<% if(farm.alarm_start == 'false') {%>เปิด<% }else{ %>ปิด<% } %>การแจ้งเตือนการให้น้ำ');
+                                    var post_url;
+                                    //console.log("Farm alarm => <%= farm.alarm_start %>");
+                                    <% if(farm.alarm_start == 'false') { %>
+                                      post_url = "/api/farm/turnon/alarm/<%= farm.id %>/";
+                                    <% } else { %>
+                                      post_url = "/api/farm/turnoff/alarm/<%= farm.id %>/";
+                                    <% } %>
+                                    //console.log("Post url => ", post_url);
+                                    $.post(post_url, {},
+                                      function( response ) {
+                                        window.location.reload();
+                                        if(response == "200")
+                                        {
+                                          dialogRef.close();
+                                          $("#button-farm-alarm").removeClass("btn-danger").addClass("btn-success").text("เปิด");
+                                        }
+                                        else{
+                                          dialogRef.close();
+                                          $("#button-farm-alarm").removeClass("btn-success").addClass("btn-danger").text("ปิด");
+                                        }
+                                    });
+                                }
+                            }]
+
+                            });
+                        });
+                      </script>
+                    </td>
+                      <!--td style="text-align: center;">
                         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
                         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
                         <script src="/_js/bootstrap-confirmation.js"></script>
@@ -420,11 +472,11 @@ function post2farm(path, params, method) {
                           popout: true
                         });
                         </script>
-                      </td>
+                      </td-->
                     </tr>
                     <tr>
                       <td>สถานะเปิดใช้งานฟาร์ม</td>
-                      <td style="text-align: center;">
+                      <!--td style="text-align: center;">
                         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
                         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
                         <script src="/_js/bootstrap-confirmation.js"></script>
@@ -448,7 +500,72 @@ function post2farm(path, params, method) {
                           popout: true
                         });
                         </script>
-                      </td>
+                      </td-->
+                      <td style="text-align: center;">
+                        <button id="button-farm-activate" class="btn has-spinner <% if(farm.activated == 'false') {%>btn-danger <% }else{ %> btn-success <% } %>"><span class="spinner"><i class="fa fa-refresh fa-spin"></i></span> <% if(farm.activated == 'false') {%> <span class="icon-remove"></span> ปิด <% }else{ %><span class="icon-ok"></span> เปิด <% } %></button>
+                        <script>
+                        $("#button-farm-activate").on("click", function(event) {
+                            var $this = $(this);
+                            //event.preventDefault();
+                            BootstrapDialog.show({
+                              message: '<% if(farm.activated == 'false') {%>เปิด<% }else{ %>ปิด<% } %>ระบบควบคุมการให้น้ำตามสภาพภูมิอากาศอย่างอัตโนมัติของฟาร์ม<%= farm.title %>?',
+                              type: BootstrapDialog.TYPE_WARNING,
+                              buttons: [{
+                                  label: 'ยกเลิก',
+                                  action: function(dialogRef){
+                                      dialogRef.close();
+                                        }
+                                      },
+                                {
+                                icon: 'glyphicon glyphicon-check',
+                                label: 'ตกลง',
+                                cssClass: 'btn-warning',
+                                autospin: true,
+                                action: function(dialogRef){
+                                    $this.toggleClass('active');
+                                    dialogRef.enableButtons(false);
+                                    dialogRef.setClosable(false);
+                                    dialogRef.getModalBody().html('...กำลังทำการ<% if(farm.activated == 'false') {%>เปิด<% }else{ %>ปิด<% } %>ระบบควบคุมการให้น้ำอัตโนมัติของฟาร์ม<%= farm.title %>');
+                                    var post_url;
+                                    //console.log("Farm alarm => <%= farm.alarm_start %>");
+                                    <% if(farm.activated == 'false') { %>
+                                      post_url = "/api/farm/activate2/<%= farm.id %>/";
+                                    <% } else { %>
+                                      post_url = "/api/farm/deactivate2/<%= farm.id %>/";
+                                    <% } %>
+                                    //console.log("Post url => ", post_url);
+                                    $.post(post_url, {},
+                                      function( response ) {
+                                        if(response == "200")
+                                        {
+                                          dialogRef.close();
+                                          window.location.reload();
+                                        }
+                                        else{
+                                          <% if(farm.activated == 'false') { %>
+                                            $.gritter.add({
+                                              title:	'ผิดพลาด',
+                                              text:	'เปิดระบบฟาร์ม<%= farm.title %>ไม่สำเร็จ',
+                                              sticky: true
+                                            });
+                                          <% } else { %>
+                                            $.gritter.add({
+                                              title:	'ผิดพลาด',
+                                              text:	'ปิดระบบฟาร์ม<%= farm.title %>ไม่สำเร็จ',
+                                              sticky: true
+                                            });
+                                          <% } %>
+                                          $this.toggleClass('active');
+                                          dialogRef.close();
+                                        }
+                                    });
+                                }
+                            }]
+
+                            });
+                        });
+                      </script>
+                    </td>
                     </tr>
                   </tbody>
                 </table>
@@ -458,7 +575,7 @@ function post2farm(path, params, method) {
           </div>
 
         </div>
-        <button class="btn btn-sm btn-warning" onclick="post2farm('../edit/<%= farm.id %>',{});" href="#">แก้ไข</button> <button type="button" class="btn btn-default" onclick="window.history.back();">กลับ</button>
+        <button type="button" class="btn btn-primary" onclick="location.href='/farm/'"><i class="icon-circle-arrow-left"></i> กลับ</button> <button class="btn btn-sm btn-warning" onclick="post2farm('../edit/<%= farm.id %>',{});" href="#"><i class="icon-edit"></i> แก้ไข</button>
       </div>
     </div>
   </div>
@@ -482,13 +599,15 @@ function post2farm(path, params, method) {
 <script src="/_js/jquery.uniform.js"></script>
 <script src="/_js/masked.js"></script>
 <script src="/_js/select2.min.js"></script>
-<script src="/_js/matrix.form_common.js"></script>
+<!--script src="/_js/matrix.form_common.js"></script-->
 <script src="/_js/matrix.js"></script>
+<script src="/_js/jquery.gritter.min.js"></script>
+<script src="/_js/matrix.interface.js"></script>
 <script src="/_js/wysihtml5-0.3.0.js"></script>
 <script src="/_js/jquery.peity.min.js"></script>
 <script src="/_js/bootstrap-wysihtml5.js"></script>
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 <!--<script src="https://cdn.jsdelivr.net/jquery/1.11.3/jquery.min.js"></script>-->
-<script src="http://wzrd.in/standalone/uuid%2Fv1@latest"></script>
+<!--script src="http://wzrd.in/standalone/uuid%2Fv1@latest"></script-->
 </body>
 </html>

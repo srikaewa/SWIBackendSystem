@@ -136,7 +136,7 @@ exports.show_mainpump = function(req, res){
     }
   ], function(err, results){
     if(err)
-      res.send(err);
+      res.render('dashboard/error405.ejs', {});
     var moment = require('moment');
     res.render('dashboard/mainpump/show_mainpump.ejs', {mainpump: results[1], moment: moment});
   });
@@ -154,8 +154,8 @@ exports.delete_a_mainpump_id = function(req, res){
   console.log("Delete mainpump by id => " + mainpump_id);
   var ref = db.ref('/mainpump/'+mainpump_id).remove(function(err){
     if(err)
-      return res.send();
-    res.redirect('../../mainpump');
+      res.render('dashboard/error405.ejs', {});
+    res.redirect('/mainpump');
   });
 };
 
@@ -283,6 +283,7 @@ exports.turnon_mainpump = function(req, res){
           mainpumpClient.updateChannel(parseInt(mainpump_id), resp, function(err, resp2){
             if(!err && resp2 > 0)
             {
+              resp.last_updated = moment().format();
               db.ref('/mainpump').child(mainpump_id).update(resp,function(err){
               console.log("Turning on mainpump[" + mainpump_id + "] is done successfully...");
               callback(null, 1);
@@ -361,6 +362,7 @@ exports.api_turnon_mainpump = function(req, res){
           mainpumpClient.updateChannel(parseInt(mainpump_id), resp, function(err, resp2){
             if(!err && resp2 > 0)
             {
+              resp.last_updated = moment().format();
               db.ref('/mainpump').child(mainpump_id).update(resp,function(err){
               console.log("Turning on mainpump[" + mainpump_id + "] is done successfully...");
               callback(null, 1);
@@ -369,7 +371,7 @@ exports.api_turnon_mainpump = function(req, res){
             else {
               console.log("Turning on mainpump[" + mainpump_id + "] with response = " + resp + " -> failed...");
               //callback(null, 111);
-              res.send("2001");
+              res.send("201");
             }
           });
         }
@@ -391,8 +393,8 @@ exports.api_turnon_mainpump = function(req, res){
     }
   ], function(err, results){
     if(err)
-      res.send("2002")
-    res.send("2000");
+      res.send("202")
+    res.send("200");
   });
 };
 
@@ -441,6 +443,7 @@ exports.turnoff_mainpump = function(req, res){
           mainpumpClient.updateChannel(parseInt(mainpump_id), resp, function(err, resp2){
             if(!err && resp2 > 0)
             {
+              resp.last_updated = moment().format();
               db.ref('/mainpump').child(mainpump_id).update(resp,function(err){
               console.log("Turning off mainpump[" + mainpump_id + "] is done successfully...");
               callback(null, 1);
@@ -453,7 +456,7 @@ exports.turnoff_mainpump = function(req, res){
           });
         }
         else {
-          res.send("Error with " + JSON.stringify(resp));
+          res.render('dashboard/error405.ejs', {});
           callback(null, -2);
         }
       });
@@ -519,6 +522,7 @@ exports.api_turnoff_mainpump = function(req, res){
           mainpumpClient.updateChannel(parseInt(mainpump_id), resp, function(err, resp2){
             if(!err && resp2 > 0)
             {
+              resp.last_updated = moment().format();
               db.ref('/mainpump').child(mainpump_id).update(resp,function(err){
               console.log("Turning off mainpump[" + mainpump_id + "] is done successfully...");
               callback(null, 1);
@@ -526,12 +530,12 @@ exports.api_turnoff_mainpump = function(req, res){
             }
             else {
               console.log("Turning off mainpump[" + mainpump_id + "] with response = " + resp + " -> failed...");
-              res.send("2201");
+              res.send("201");
             }
           });
         }
         else {
-          res.send("Error with " + JSON.stringify(resp));
+          res.send("202");
           callback(null, -2);
         }
       });
@@ -548,65 +552,11 @@ exports.api_turnoff_mainpump = function(req, res){
     }
   ], function(err, results){
     if(err)
-      res.send("2202");
-    res.send("2200");
+      res.send("203");
+    res.send("200");
   });
 };
 
-exports.turnoff_mainpump2 = function(req, res){
-  var mainpump_id = req.params.id;
-  var mainpump_write_api_key = req.params.key;
-  var mainpump_field = req.params.field;
-  console.log("Field => " + mainpump_field);
-  var mainpumpClient = new ThingSpeakClient();
-  mainpumpClient.getLastEntryInChannelFeed(parseInt(mainpump_id), {}, function(err, resp){
-    if(!err && resp.entry_id > 0){
-      switch(mainpump_field){
-        case '1':
-          resp.field1 = -1;
-          break;
-        case '2':
-          resp.field2 = -1;
-          break;
-        case '3':
-          resp.field3 = -1;
-          break;
-        case '4':
-          resp.field4 = -1;
-          break;
-        case '5':
-          resp.field5 = -1;
-          break;
-        case '6':
-          resp.field6 = -1;
-          break;
-        case '7':
-          resp.field7 = -1;
-          break;
-        case '8':
-          resp.field8 = -1;
-          break;
-      }
-      console.log("Updating mainpump[" + mainpump_id + "] with => " + JSON.stringify(resp) + " & key => " + mainpump_write_api_key);
-      mainpumpClient.attachChannel(parseInt(mainpump_id), {writeKey: mainpump_write_api_key});
-      mainpumpClient.updateChannel(parseInt(mainpump_id), resp, function(err, resp){
-        if(!err && resp > 0)
-        {
-          db.ref('/mainpump').child(mainpump_id).update({status: '1'},function(err){
-            console.log("Turning off mainpump[" + mainpump_id + "] is done successfully...");
-          });
-        }
-        else {
-          console.log("Turning off mainpump[" + mainpump_id + "] failed...");
-        }
-        res.send(resp);
-      });
-    }
-    else {
-      res.send(resp);
-    }
-  });
-};
 
 exports.api_set_description = function(req, res){
   var id = req.params.id;
@@ -618,10 +568,10 @@ exports.api_set_description = function(req, res){
     {
       console.log("Set description of mainpump[" + id + "] with value = " + re.params.value + " ...FAILED!");
       //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
-      res.send("2211");
+      res.send("201");
     }
     console.log("Set description of mainpump[" + id + "] with value = " + re.params.value + " ...OK!");
     //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
-    res.send("2210");
+    res.send("200");
   });
 }

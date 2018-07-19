@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="_css/bootstrap-wysihtml5.css" />
 <link href="_font-awesome/css/font-awesome.css" rel="stylesheet" />
 <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,800' rel='stylesheet' type='text/css'>
-<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<!--link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet"-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
@@ -56,7 +56,7 @@ function post2farm(path, params, method) {
 <!--top-Header-menu-->
 <div id="user-nav" class="navbar navbar-inverse">
   <ul class="nav">
-    <li  class="dropdown" id="profile-messages" ><a title="" href="#" data-toggle="dropdown" data-target="#profile-messages" class="dropdown-toggle"><i class="icon icon-user"></i>  <span class="text">Welcome User</span><b class="caret"></b></a>
+    <li class="dropdown" id="profile-messages" ><a title="" href="#" data-toggle="dropdown" data-target="#profile-messages" class="dropdown-toggle"><i class="icon icon-user"></i>  <span class="text" id="user-email"></span><b class="caret"></b></a>
       <ul class="dropdown-menu">
         <li><a href="#"><i class="icon-user"></i> My Profile</a></li>
         <li class="divider"></li>
@@ -77,7 +77,7 @@ function post2farm(path, params, method) {
       </ul>
     </li>
     <li class=""><a title="" href="#"><i class="icon icon-cog"></i> <span class="text">Settings</span></a></li>
-    <li class=""><a title="" href="login.html"><i class="icon icon-share-alt"></i> <span class="text">Logout</span></a></li>
+    <li class=""><a title=""  href="javascript:UserAccount.UserSignOutOption()"><i class="icon icon-share-alt"></i> <span class="text">Logout</span></a></li>
   </ul>
 </div>
 
@@ -90,20 +90,27 @@ function post2farm(path, params, method) {
 
 <!--sidebar-menu-->
 
-<div id="sidebar"> <a href="#" class="visible-phone"><i class="icon icon-list"></i>Forms</a>
+<div id="sidebar"> <a href="#" class="visible-phone"><i class="icon icon-list"></i></a>
   <ul>
     <li><a href="dashboard"><i class="icon icon-home"></i> <span>Dashboard</span></a> </li>
-    <li class="active"><a href="farm"><i class="fa fa-pagelines"></i> <span>รายการฟาร์ม</span></a> </li>
-    <li class="submenu"><a href="#"><i class="icon icon-wrench"></i> <span>จัดการฮาร์ดแวร์</span><span class="label label-important">3</span></a>
+    <li class="submenu"><a href="#"><i class="icon icon-leaf"></i></i> <span>รายการฟาร์ม</span><span class="label label-important">3</span></a>
       <ul>
-        <li><a href="mainpump">รายการปั๊มน้ำ</a></li>
-        <li><a href="valve">รายการวาล์วเปิดปิดน้ำ</a></li>
-        <li><a href="sensor">รายการเซ็นเซอร์</a></li>
+        <li><a href="/farm">ฟาร์มทั้งหมด</a></li>
+        <li><a href="/farm/1">&nbsp;&nbsp;- ฟาร์มเซ็นเซอร์</a></li>
+        <li><a href="/farm/2">&nbsp;&nbsp;- ฟาร์ม ETp</a></li>
       </ul>
     </li>
-    <li> <a href="soil"><i class="icon icon-user"></i> <span>จัดการประเภทดิน</span></a> </li>
-    <li> <a href="plant"><i class="icon icon-user"></i> <span>จัดการประเภทพืช</span></a> </li>
-    <li> <a href="user"><i class="icon icon-user"></i> <span>จัดการผู้ใช้งาน</span></a> </li>
+    <li class="submenu active"><a href="#"><i class="icon icon-wrench"></i> <span>จัดการฮาร์ดแวร์</span><span class="label label-important">3</span></a>
+      <ul>
+        <li><a href="/mainpump">รายการปั๊มน้ำ</a></li>
+        <li><a href="/valve">รายการวาล์วเปิดปิดน้ำ</a></li>
+        <li><a href="/sensor">รายการเซ็นเซอร์</a></li>
+      </ul>
+    </li>
+    <!--li> <a href="/valveschedule"><i class="icon icon-th"></i> <span>จัดการเปิดปิดวาล์วน้ำ</span></a> </li-->
+    <li> <a href="/soil"><i class="icon icon-globe"></i> <span>จัดการประเภทดิน</span></a> </li>
+    <li> <a href="/plant"><i class="icon icon-lemon"></i> <span>จัดการประเภทพืช</span></a> </li>
+    <li> <a href="/user"><i class="icon icon-user"></i> <span>จัดการผู้ใช้งาน</span></a> </li>
   </ul>
 </div>
 
@@ -118,17 +125,17 @@ function post2farm(path, params, method) {
     <div class="span12">
       <div class="widget-box">
         <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
-          <h5>ข้อมูลปั๊มน้ำ (Mainpump)</h5>
+          <h5>สร้างข้อมูลปั๊มน้ำใหม่</h5>
         </div>
         <div class="widget-content">
           <form action="mainpump/create" method="post">
             <div class="form-group">
               <label for="recipient-name" class="col-form-label">หมายเลขปั๊มน้ำ:</label>
-              <input type="text" class="form-control" id="add-mainpump-id" name="add_mainpump_id" placeholder="12345">
+              <input type="text" class="form-control" id="add-mainpump-id" name="add_mainpump_id" placeholder="12345" required>
             </div>
             <div class="form-group">
               <label for="message-text" class="col-form-label">รายละเอียด</label>
-              <textarea class="form-control" id="add-mainpump-description" name="add_mainpump_description" placeholder="คำอธิบายรายละเอียดปั๊มน้ำ เช่นปั๊มน้ำจ่ายแปลง 1-5"></textarea>
+              <textarea class="form-control" id="add-mainpump-description" name="add_mainpump_description" placeholder="คำอธิบายรายละเอียดปั๊มน้ำ เช่นปั๊มน้ำจ่ายแปลง 1-5" required></textarea>
             </div>
             <div class="form-group">
               <label for="message-text" class="col-form-label">Write API Key</label>
@@ -138,7 +145,7 @@ function post2farm(path, params, method) {
               <label for="message-text" class="col-form-label">ช่วงเวลาอ่านค่า (นาที)</label>
               <input type="text" class="form-control" id="add-mainpump-sampling-time" name="add_mainpump_sampling_time" placeholder="15">
             </div> -->
-            <button type="submit" class="btn btn-primary">บันทึก</button> <button type="button" class="btn btn-default" onclick="window.history.back();">ยกเลิก</button>
+            <button type="button" class="btn btn-primary" onclick="window.history.back();"><i class="icon-minus-sign"></i> ยกเลิก</button> <button type="submit" class="btn btn-warning"><i class="icon-save"></i> บันทึก</button>
           </form>
         </div>
       </div>
@@ -168,7 +175,7 @@ function post2farm(path, params, method) {
 <script src="_js/wysihtml5-0.3.0.js"></script>
 <script src="_js/jquery.peity.min.js"></script>
 <script src="_js/bootstrap-wysihtml5.js"></script>
-<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+<!--script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script-->
 <!--<script src="https://cdn.jsdelivr.net/jquery/1.11.3/jquery.min.js"></script>-->
 <script src="http://wzrd.in/standalone/uuid%2Fv1@latest"></script>
 <script>

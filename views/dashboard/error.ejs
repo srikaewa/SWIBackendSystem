@@ -7,45 +7,19 @@
 <link rel="stylesheet" href="/_css/bootstrap.min.css" />
 <link rel="stylesheet" href="/_css/bootstrap-responsive.min.css" />
 <link rel="stylesheet" href="/_css/bootstrap-switch.css" />
-<link rel="stylesheet" href="/_css/datepicker.css" />
 <link rel="stylesheet" href="/_css/colorpicker.css" />
-<link rel="stylesheet" href="/_css/select2.css" />
+<link rel="stylesheet" href="/_css/datepicker.css" />
 <link rel="stylesheet" href="/_css/uniform.css" />
+<link rel="stylesheet" href="/_css/select2.css" />
 <link rel="stylesheet" href="/_css/matrix-style.css" />
 <link rel="stylesheet" href="/_css/matrix-media.css" />
 <link rel="stylesheet" href="/_css/custom.css" />
 <link rel="stylesheet" href="/_css/bootstrap-wysihtml5.css" />
 <link href="/_font-awesome/css/font-awesome.css" rel="stylesheet" />
 <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,800' rel='stylesheet' type='text/css'>
-<!--link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet"-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-<script>
-function post2sensor(path, params, method) {
-    method = method || "post"; // Set method to post by default if not specified.
-
-    // The rest of this code assumes you are not using a library.
-    // It can be made less wordy if you use one.
-    var form = document.createElement("form");
-    form.setAttribute("method", method);
-    form.setAttribute("action", path);
-
-    for(var key in params) {
-        if(params.hasOwnProperty(key)) {
-            var hiddenField = document.createElement("input");
-            hiddenField.setAttribute("type", "hidden");
-            hiddenField.setAttribute("name", key);
-            hiddenField.setAttribute("value", params[key]);
-
-            form.appendChild(hiddenField);
-        }
-    }
-
-    document.body.appendChild(form);
-    form.submit();
-}
-</script>
 
 <!--Header-part-->
 <div id="header">
@@ -92,25 +66,62 @@ function post2sensor(path, params, method) {
 
 <div id="sidebar"> <a href="#" class="visible-phone"><i class="icon icon-list"></i>Forms</a>
   <ul>
-    <li><a href="#"><i class="icon icon-home"></i> <span>Dashboard</span></a> </li>
-    <li class="submenu"><a href="#"><i class="fa fa-pagelines"></i> <span>รายการฟาร์ม</span><span class="label label-important">4</span></a></a>
-      <ul>
-        <li><a href="farm">ฟาร์มทั้งหมด</a></li>
-        <li><a href="farm/1">ฟาร์มระบบเซ็นเซอร์</a></li>
-        <li><a href="farm/2">ฟาร์มระบบน้ำหยด</a></li>
-        <li><a href="farm/3">ฟาร์มระบบเซ็นเซอร์ + น้ำหยด</a></li>
-      </ul>
-    </li>
-    <li class="submenu active"><a href="#"><i class="icon icon-wrench"></i> <span>จัดการฮาร์ดแวร์</span><span class="label label-important">3</span></a>
+    <li><a href="dashboard"><i class="icon icon-home"></i> <span>Dashboard</span></a> </li>
+    <li class="active"><a href="farm"><i class="fa fa-pagelines"></i> <span>รายการฟาร์ม</span></a> </li>
+    <li class="submenu"><a href="#"><i class="icon icon-wrench"></i> <span>จัดการฮาร์ดแวร์</span><span class="label label-important">3</span></a>
       <ul>
         <li><a href="mainpump">รายการปั๊มน้ำ</a></li>
         <li><a href="valve">รายการวาล์วเปิดปิดน้ำ</a></li>
         <li><a href="sensor">รายการเซ็นเซอร์</a></li>
       </ul>
     </li>
-    <li> <a href="#"><i class="icon icon-user"></i> <span>จัดการประเภทดิน</span></a> </li>
-    <li> <a href="#"><i class="icon icon-user"></i> <span>จัดการประเภทพืช</span></a> </li>
-    <li> <a href="#"><i class="icon icon-user"></i> <span>จัดการผู้ใช้งาน</span></a> </li>
+    <li> <a href="soil"><i class="icon icon-user"></i> <span>จัดการประเภทดิน</span></a> </li>
+    <li> <a href="plant"><i class="icon icon-user"></i> <span>จัดการประเภทพืช</span></a> </li>
+    <li> <a href="user"><i class="icon icon-user"></i> <span>จัดการผู้ใช้งาน</span></a> </li>
+    <!--
+    <li><a href="widgets.html"><i class="icon icon-inbox"></i> <span>Widgets</span></a> </li>
+    <li><a href="tables.html"><i class="icon icon-th"></i> <span>Tables</span></a></li>
+    <li><a href="grid.html"><i class="icon icon-fullscreen"></i> <span>Full width</span></a></li>
+    <li class="submenu"> <a href="#"><i class="icon icon-list"></i> <span>Forms</span> <span class="label label-important">3</span></a>
+      <ul>
+        <li><a href="form-common.html">Basic Form</a></li>
+        <li><a href="form-validation.html">Form with Validation</a></li>
+        <li><a href="form-wizard.html">Form with Wizard</a></li>
+      </ul>
+    </li>
+    <li><a href="buttons.html"><i class="icon icon-tint"></i> <span>Buttons &amp; icons</span></a></li>
+    <li><a href="interface.html"><i class="icon icon-pencil"></i> <span>Eelements</span></a></li>
+    <li class="submenu"> <a href="#"><i class="icon icon-file"></i> <span>Addons</span> <span class="label label-important">5</span></a>
+      <ul>
+        <li><a href="index2.html">Dashboard2</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="calendar.html">Calendar</a></li>
+        <li><a href="invoice.html">Invoice</a></li>
+        <li><a href="chat.html">Chat option</a></li>
+      </ul>
+    </li>
+    <li class="submenu"> <a href="#"><i class="icon icon-info-sign"></i> <span>Error</span> <span class="label label-important">4</span></a>
+      <ul>
+        <li><a href="error403.html">Error 403</a></li>
+        <li><a href="error404.html">Error 404</a></li>
+        <li><a href="error405.html">Error 405</a></li>
+        <li><a href="error500.html">Error 500</a></li>
+      </ul>
+    </li>
+    <li class="content"> <span>Monthly Bandwidth Transfer</span>
+      <div class="progress progress-mini progress-danger active progress-striped">
+        <div style="width: 77%;" class="bar"></div>
+      </div>
+      <span class="percent">77%</span>
+      <div class="stat">21419.94 / 14000 MB</div>
+    </li>
+    <li class="content"> <span>Disk Space Usage</span>
+      <div class="progress progress-mini active progress-striped">
+        <div style="width: 87%;" class="bar"></div>
+      </div>
+      <span class="percent">87%</span>
+      <div class="stat">604.44 / 4000 MB</div>
+    </li> -->
   </ul>
 </div>
 
@@ -118,40 +129,19 @@ function post2sensor(path, params, method) {
 
 <div id="content">
 <div id="content-header">
-  <div id="breadcrumb"> <a href="index.html" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a> <a href="#" class="tip-bottom">จัดการฮาร์ดแวร์</a> <a href="#" class="current">รายการเซ็นเซอร์</a> </div>
+  <div id="breadcrumb"> <a href="index.html" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a> <a href="#" class="tip-bottom">จัดการฟาร์ม</a> <a href="#" class="current">สร้างข้อมูลฟาร์มใหม่</a> </div>
 </div>
 <div class="container-fluid">
   <div class="row-fluid">
     <div class="span12">
-      <div class="widget-box">
-        <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
-          <h5>แก้ไขข้อมูลเซ็นเซอร์</h5>
-        </div>
-        <div class="widget-content">
-          <form action="../update/<%= sensor.id %>" method="post">
-            <div class="form-group">
-              <label for="sensor-id" class="col-form-label">หมายเลขเซ็นเซอร์:</label>
-              <input type="text" class="form-control" id="edit-sensor-id" name="edit_sensor_id" value="<%= sensor.id %>" readonly>
-            </div>
-            <div class="form-group">
-              <label for="sensor-description" class="col-form-label">รายละเอียด:</label>
-              <textarea class="form-control" id="edit-sensor-description" name="edit_sensor_description" required><%= sensor.description %></textarea>
-            </div>
-            <div class="form-group">
-              <label for="message-text" class="col-form-label">Read API Key:</label>
-              <input type="text" class="form-control" id="edit-sensor-read-api-key" name="edit_sensor_read_api_key" value="<%= sensor.read_api_key %>">
-            </div>
-            <!--<div class="form-group">
-              <label for="message-text" class="col-form-label">ช่วงเวลาอ่านค่า (นาที)</label>
-              <input type="text" class="form-control" id="edit-sensor-sampling-time" name="edit_sensor_sampling_time" placeholder="15" value="<%= sensor.sampling_time %>">
-            </div> -->
-            <button type="button" class="btn btn-primary" onclick="location.href='/sensor/show/<%= sensor.id %>'"><i class="icon-minus-sign"></i> ยกเลิก</button> <button type="submit" class="btn btn-warning"><i class="icon-save"></i> บันทึก</button>
-          </form>
-      </div>
-    </div>
-  </div>
-</div>
 
+  <div class="alert alert-error alert-block"> <a class="close" data-dismiss="alert" href="#">×</a>
+    <h4 class="alert-heading">Error!</h4>
+    มีบางอย่างไม่ถูกต้อง ไม่สามารถเข้าถึงข้อมูลในส่วนนี้ <a href="/dashboard">คลิ๊ก</a>เพื่อกลับไปสู่หน้าหลัก</div>
+</div>
+</div>
+</div>
+</div>
 
 <!--Footer-part-->
 <div class="row-fluid">
@@ -174,7 +164,6 @@ function post2sensor(path, params, method) {
 <script src="/_js/wysihtml5-0.3.0.js"></script>
 <script src="/_js/jquery.peity.min.js"></script>
 <script src="/_js/bootstrap-wysihtml5.js"></script>
-<!--script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script-->
 <!--<script src="https://cdn.jsdelivr.net/jquery/1.11.3/jquery.min.js"></script>-->
 <script>
 	$('.textarea_editor').wysihtml5();

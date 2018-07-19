@@ -4,21 +4,25 @@
 <title>SUT Smart Irrigation System Backend</title>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="stylesheet" href="_css/bootstrap.min.css" />
-<link rel="stylesheet" href="_css/bootstrap-responsive.min.css" />
-<link rel="stylesheet" href="_css/bootstrap-switch.css" />
-<link rel="stylesheet" href="_css/colorpicker.css" />
-<link rel="stylesheet" href="_css/datepicker.css" />
-<link rel="stylesheet" href="_css/uniform.css" />
-<link rel="stylesheet" href="_css/select2.css" />
-<link rel="stylesheet" href="_css/matrix-style.css" />
-<link rel="stylesheet" href="_css/matrix-media.css" />
-<link rel="stylesheet" href="_css/bootstrap-wysihtml5.css" />
-<link rel="stylesheet" href="_css/custom.css" />
-<link href="_font-awesome/css/font-awesome.css" rel="stylesheet" />
+<link rel="stylesheet" href="/_css/bootstrap.min.css" />
+<link rel="stylesheet" href="/_css/bootstrap-responsive.min.css" />
+<link rel="stylesheet" href="/_css/bootstrap-switch.css" />
+<link rel="stylesheet" href="/_css/colorpicker.css" />
+<link rel="stylesheet" href="/_css/datepicker.css" />
+<link rel="stylesheet" href="/_css/uniform.css" />
+<link rel="stylesheet" href="/_css/select2.css" />
+<link rel="stylesheet" href="/_css/matrix-style.css" />
+<link rel="stylesheet" href="/_css/matrix-media.css" />
+<link rel="stylesheet" href="/_css/bootstrap-wysihtml5.css" />
+<link rel="stylesheet" href="/_css/custom.css" />
+<link href="/_font-awesome/css/font-awesome.css" rel="stylesheet" />
 <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,800' rel='stylesheet' type='text/css'>
-<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<!--link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet"-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.35.4/css/bootstrap-dialog.min.css">
+<script src="/_js/jquery.min.js"></script>
+<script src="/_js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.35.4/js/bootstrap-dialog.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
 <script>
   // Initialize Firebase
@@ -138,7 +142,7 @@ function post2plant(path, params, method) {
       </ul>
     </li>
     <li class=""><a title="" href="#"><i class="icon icon-cog"></i> <span class="text">Settings</span></a></li>
-    <li class=""><a title="" href="javascript:UserAccount.UserSignOutOption()"><i class="icon icon-share-alt"></i> <span class="text">Logout</span></a></li>
+    <li class=""><a title=""  href="javascript:UserAccount.UserSignOutOption()"><i class="icon icon-share-alt"></i> <span class="text">Logout</span></a></li>
   </ul>
 </div>
 
@@ -154,23 +158,24 @@ function post2plant(path, params, method) {
 <div id="sidebar"> <a href="#" class="visible-phone"><i class="icon icon-list"></i></a>
   <ul>
     <li><a href="dashboard"><i class="icon icon-home"></i> <span>Dashboard</span></a> </li>
-    <li class="submenu"><a href="#"><i class="icon icon-leaf"></i> <span>รายการฟาร์ม</span><span class="label label-important">4</span></a></a>
+    <li class="submenu"><a href="#"><i class="icon icon-leaf"></i></i> <span>รายการฟาร์ม</span><span class="label label-important">3</span></a>
       <ul>
-        <li><a href="farm">ฟาร์มทั้งหมด</a></li>
-        <li><a href="farm/1">ฟาร์มระบบเซ็นเซอร์</a></li>
-        <li><a href="farm/2">ฟาร์มระบบน้ำหยด</a></li>
-        <li><a href="farm/3">ฟาร์มระบบเซ็นเซอร์ + น้ำหยด</a></li>
-      </ul>
-    </li>    <li class="submenu"><a href="#"><i class="icon icon-wrench"></i> <span>จัดการฮาร์ดแวร์</span><span class="label label-important">3</span></a>
-      <ul>
-        <li><a href="mainpump">รายการปั๊มน้ำ</a></li>
-        <li><a href="valve">รายการวาล์วเปิดปิดน้ำ</a></li>
-        <li><a href="sensor">รายการเซ็นเซอร์</a></li>
+        <li><a href="/farm">ฟาร์มทั้งหมด</a></li>
+        <li><a href="/farm/1">&nbsp;&nbsp;- ฟาร์มเซ็นเซอร์</a></li>
+        <li><a href="/farm/2">&nbsp;&nbsp;- ฟาร์ม ETp</a></li>
       </ul>
     </li>
-    <li> <a href="soil"><i class="icon icon-globe"></i> <span>จัดการประเภทดิน</span></a> </li>
-    <li class="active"> <a href="plant"><i class="icon icon-lemon"></i> <span>จัดการประเภทพืช</span></a> </li>
-    <li> <a href="user"><i class="icon icon-user"></i> <span>จัดการผู้ใช้งาน</span></a> </li>
+    <li class="submenu"><a href="#"><i class="icon icon-wrench"></i> <span>จัดการฮาร์ดแวร์</span><span class="label label-important">3</span></a>
+      <ul>
+        <li><a href="/mainpump">รายการปั๊มน้ำ</a></li>
+        <li><a href="/valve">รายการวาล์วเปิดปิดน้ำ</a></li>
+        <li><a href="/sensor">รายการเซ็นเซอร์</a></li>
+      </ul>
+    </li>
+    <!--li> <a href="/valveschedule"><i class="icon icon-th"></i> <span>จัดการเปิดปิดวาล์วน้ำ</span></a> </li-->
+    <li> <a href="/soil"><i class="icon icon-globe"></i> <span>จัดการประเภทดิน</span></a> </li>
+    <li class="active"> <a href="/plant"><i class="icon icon-lemon"></i> <span>จัดการประเภทพืช</span></a> </li>
+    <li> <a href="/user"><i class="icon icon-user"></i> <span>จัดการผู้ใช้งาน</span></a> </li>
   </ul>
 </div>
 
@@ -197,7 +202,7 @@ function post2plant(path, params, method) {
                 <th>อายุพืช (สัปดาห์)</th>
                 <!--<th>Kc</th>
                 <th>ความยาวรากพืช</th>-->
-                <th>แก้ไขล่าสุด</th>
+                <!--th>แก้ไขล่าสุด</th-->
                 <th>แก้ไข</th>
                 <th>ลบ</th>
               </tr>
@@ -210,28 +215,44 @@ function post2plant(path, params, method) {
                 <!--
                 <td style="text-align: center;">ดูรายละเอียด</td>
                 <td style="text-align: center;">ดูรายละเอียด</td> -->
-                <td style="text-align: center;"><%= plants[i].created_at %></td>
-                <td style="text-align: center;"><button class="btn btn-sm btn-warning" onclick="post2plant('plant/edit/<%= plants[i].id %>',{});" href="#">แก้ไข</button></td>
+                <!--td style="text-align: center;"><%= plants[i].created_at %></td-->
+                <td style="text-align: center;"><button class="btn btn-sm btn-warning" onclick="post2plant('plant/edit/<%= plants[i].id %>',{});" href="#"><i class="icon-edit"></i> แก้ไข</button></td>
                 <td style="text-align: center;">
-                  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-                  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-                  <script src="_js/bootstrap-confirmation.js"></script>
-                  <button id="delete_sonsor_<%= plants[i].id %>" class="btn btn-danger" data-toggle="confirmation"
-                  data-popout="true"
-                  data-btn-ok-label="ลบเลย" data-btn-ok-icon="glyphicon glyphicon-share-alt"
-                  data-btn-ok-class="btn-success"
-                  data-btn-cancel-label="ยกเลิก" data-btn-cancel-icon="glyphicon glyphicon-ban-circle"
-                  data-btn-cancel-class="btn-danger"
-                  data-title="ลบข้อมูล<%= plants[i].title %>?" data-content="">ลบ</button>
+                  <button id="button-plant-<%= plants[i].id %>-delete" class="btn btn-danger"><i class="icon-trash"></i> ลบ</button>
                   <script>
-                  $('[data-toggle=confirmation]').confirmation({
-                    rootSelector: '[data-toggle=confirmation]',
-                    onConfirm: function() {
-                      post2plant('plant/delete/<%= plants[i].id %>',{});
-                    },
-                    popout: true
+                  $("#button-plant-<%= plants[i].id %>-delete").on("click", function(event) {
+                      //event.preventDefault();
+                      BootstrapDialog.show({
+                        message: 'การลบข้อมูลนี้จะไม่สามารถกู้ข้อมูลกลับได้ ดำเนินการลบข้อมูล \"<%= plants[i].title %>\"?',
+                        type: BootstrapDialog.TYPE_WARNING,
+                        buttons: [{
+                            label: 'ยกเลิก',
+                            action: function(dialogRef){
+                                dialogRef.close();
+                                  }
+                                },
+                          {
+                          icon: 'glyphicon glyphicon-check',
+                          label: 'ตกลง',
+                          cssClass: 'btn-warning',
+                          autospin: true,
+                          action: function(dialogRef){
+                              dialogRef.enableButtons(false);
+                              dialogRef.setClosable(false);
+                              dialogRef.getModalBody().html('กำลังทำการลบข้อมูล<%= plants[i].title %>...');
+                              var post_url = '/plant/delete/<%= plants[i].id %>';
+                              //console.log("Post url => ", post_url);
+                              $.post(post_url, {},
+                                function( response ) {
+                                  window.location.reload();
+                                  dialogRef.close();
+                              });
+                          }
+                      }]
+
+                      });
                   });
-                  </script>
+                </script>
                 </td>
               </tr>
               <% } %>
@@ -252,23 +273,23 @@ function post2plant(path, params, method) {
 <!--end-Footer-part-->
 <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script> -->
-<script src="_js/jquery.min.js"></script>
-<script src="_js/bootstrap.min.js"></script>
-<script src="_js/jquery.ui.custom.js"></script>
-<script src="_js/bootstrap-colorpicker.js"></script>
-<script src="_js/bootstrap-datepicker.js"></script>
+<!--script src="_js/jquery.min.js"></script>
+<script src="_js/bootstrap.min.js"></script-->
+<script src="/_js/jquery.ui.custom.js"></script>
+<script src="/_js/bootstrap-colorpicker.js"></script>
+<script src="/_js/bootstrap-datepicker.js"></script>
 <!--<script src="js/jquery.toggle.buttons.js"></script> -->
-<script src="_js/masked.js"></script>
-<script src="_js/jquery.uniform.js"></script>
-<script src="_js/select2.min.js"></script>
-<script src="_js/matrix.js"></script>
-<script src="_js/matrix.form_common.js"></script>
-<script src="_js/wysihtml5-0.3.0.js"></script>
-<script src="_js/jquery.peity.min.js"></script>
-<script src="_js/bootstrap-wysihtml5.js"></script>
-<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+<script src="/_js/masked.js"></script>
+<script src="/_js/jquery.uniform.js"></script>
+<script src="/_js/select2.min.js"></script>
+<script src="/_js/matrix.js"></script>
+<script src="/_js/matrix.form_common.js"></script>
+<script src="/_js/wysihtml5-0.3.0.js"></script>
+<script src="/_js/jquery.peity.min.js"></script>
+<script src="/_js/bootstrap-wysihtml5.js"></script>
+<!--script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script-->
 <script src="https://cdn.jsdelivr.net/jquery/1.11.3/jquery.min.js"></script>
-<script src="http://wzrd.in/standalone/uuid%2Fv1@latest"></script>
+<!--script src="http://wzrd.in/standalone/uuid%2Fv1@latest"></script-->
 <script defer src="https://use.fontawesome.com/releases/v5.0.9/js/all.js" integrity="sha384-8iPTk2s/jMVj81dnzb/iFR2sdA7u06vHJyyLlAd4snFpCl/SnyUjRrbdJsw1pGIl" crossorigin="anonymous"></script>
 <!--<script src="https://cdn.jsdelivr.net/jquery/1.11.3/jquery.min.js"></script>-->
 </body>

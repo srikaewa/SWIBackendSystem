@@ -88,7 +88,7 @@ exports.create_a_plant = function(req, res) {
       root_depth: root_depth_obj,
       created_at: created_at.format()
     });
-  res.redirect('../plant')
+  res.redirect('/plant')
 };
 
 exports.edit_a_plant = function(req, res){
@@ -117,7 +117,7 @@ exports.update_a_plant = function(req, res){
     root_depth: root_depth_obj,
     created_at: created_at.format()
   });
-  res.redirect('../../plant');
+  res.redirect('/plant');
 };
 
 exports.show_plant = function(req, res){
@@ -144,7 +144,7 @@ exports.add_kc_a_plant = function(req, res){
     title: plant_title,
     created_at: created_at.format()
   });
-  res.redirect('../plant');
+  res.redirect('/plant');
 };
 
 exports.delete_a_plant_id = function(req, res){
@@ -152,7 +152,7 @@ exports.delete_a_plant_id = function(req, res){
   console.log("Delete plant by id => " + plant_id);
   var ref = db.ref('/plant/'+plant_id).remove(function(err){
     if(err)
-      return res.send();
-    res.redirect('../../plant');
+      res.render('/dashboard/error405.ejs', {});
+    res.redirect('/plant');
   });
 };

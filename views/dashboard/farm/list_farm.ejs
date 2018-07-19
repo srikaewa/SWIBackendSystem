@@ -15,10 +15,15 @@
 <link rel="stylesheet" href="/_css/matrix-media.css" />
 <link rel="stylesheet" href="/_css/bootstrap-wysihtml5.css" />
 <link rel="stylesheet" href="/_css/custom.css" />
+<link rel="stylesheet" href="/_css/jquery.gritter.css" />
 <link href="/_font-awesome/css/font-awesome.css" rel="stylesheet" />
 <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,800' rel='stylesheet' type='text/css'>
-<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<!--link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet"-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.35.4/css/bootstrap-dialog.min.css">
+<script src="/_js/jquery.min.js"></script>
+<script src="/_js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.35.4/js/bootstrap-dialog.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
 <script>
   // Initialize Firebase
@@ -61,8 +66,8 @@
             var providerData = user.providerData;
             user.getIdToken().then(function(accessToken) {
               document.getElementById('user-email').textContent = email;
-              document.getElementById('sign-in').textContent = 'Sign out';
-              document.getElementById('account-details').textContent = JSON.stringify({
+              //document.getElementById('sign-in').textContent = 'Sign out';
+              /*document.getElementById('account-details').textContent = JSON.stringify({
                 displayName: displayName,
                 email: email,
                 emailVerified: emailVerified,
@@ -71,7 +76,7 @@
                 uid: uid,
                 accessToken: accessToken,
                 providerData: providerData
-              }, null, '  ');
+              }, null, '  ');*/
             });
           } else {
             // User is signed out.
@@ -111,7 +116,7 @@ function post2farm(path, params, method) {
 </script>
 <!--Header-part-->
 <div id="header">
-  <h1><a href="dashboard.html">Matrix Admin</a></h1>
+  <h1><a href="/dashboard">Matrix Admin</a></h1>
 </div>
 <!--close-Header-part-->
 
@@ -154,23 +159,22 @@ function post2farm(path, params, method) {
 
 <div id="sidebar"> <a href="#" class="visible-phone"><i class="icon icon-list"></i></a>
   <ul>
-    <li><a href="dashboard"><i class="icon icon-home"></i> <span>Dashboard</span></a> </li>
-    <li class="submenu active"><a href="#"><i class="icon icon-leaf"></i></i> <span>รายการฟาร์ม</span><span class="label label-important">4</span></a>
+    <li><a href="/dashboard"><i class="icon icon-home"></i> <span>Dashboard</span></a> </li>
+    <li class="submenu active"><a href="#"><i class="icon icon-leaf"></i></i> <span>รายการฟาร์ม</span><span class="label label-important">3</span></a>
       <ul>
-        <li><a href="farm">ฟาร์มทั้งหมด</a></li>
-        <li><a href="farm/1">ฟาร์มให้น้ำเซ็นเซอร์</a></li>
-        <li><a href="farm/2">ฟาร์มระบบน้ำหยด</a></li>
-        <li><a href="farm/3">ฟาร์มระบบเซ็นเซอร์ + น้ำหยด</a></li>
+        <li><a href="/farm">ฟาร์มทั้งหมด</a></li>
+        <li><a href="/farm/1">&nbsp;&nbsp;- ฟาร์มเซ็นเซอร์</a></li>
+        <li><a href="/farm/2">&nbsp;&nbsp;- ฟาร์ม ETp</a></li>
       </ul>
     </li>
     <li class="submenu"><a href="#"><i class="icon icon-wrench"></i> <span>จัดการฮาร์ดแวร์</span><span class="label label-important">3</span></a>
       <ul>
-        <li><a href="mainpump">รายการปั๊มน้ำ</a></li>
-        <li><a href="valve">รายการวาล์วเปิดปิดน้ำ</a></li>
-        <li><a href="sensor">รายการเซ็นเซอร์</a></li>
+        <li><a href="/mainpump">รายการปั๊มน้ำ</a></li>
+        <li><a href="/valve">รายการวาล์วเปิดปิดน้ำ</a></li>
+        <li><a href="/sensor">รายการเซ็นเซอร์</a></li>
       </ul>
     </li>
-    <li> <a href="/valveschedule"><i class="icon icon-th"></i> <span>จัดการเปิดปิดวาล์วน้ำ</span></a> </li>
+    <!--li> <a href="/valveschedule"><i class="icon icon-th"></i> <span>จัดการเปิดปิดวาล์วน้ำ</span></a> </li-->
     <li> <a href="/soil"><i class="icon icon-globe"></i> <span>จัดการประเภทดิน</span></a> </li>
     <li> <a href="/plant"><i class="icon icon-lemon"></i> <span>จัดการประเภทพืช</span></a> </li>
     <li> <a href="/user"><i class="icon icon-user"></i> <span>จัดการผู้ใช้งาน</span></a> </li>
@@ -193,13 +197,12 @@ function post2farm(path, params, method) {
           <!--<div><h5>ฟาร์ม (Farms) <a href="#" data-toggle="modal" data-target="#addFarmModal">+</a></h5></div>-->
           <div><h5>ฟาร์ม (Farms) <a href="javascript:post2farm('./farm',{})"><i class="fas fa-plus-circle"></i></a></h5></div>
         </div>
-
         <div class="widget-content nopadding">
           <table class="table table-bordered table-striped table-hover data-table text-center">
             <thead class="thead-inverse">
               <tr>
                 <th>ชื่อฟาร์ม</th>
-                <th>รายละเอียด</th>
+                <th style="width: 50%">รายละเอียด</th>
                 <!--<th>ตำแหน่งฟาร์ม</th>
                 <th>ประเภทดิน</th>
                 <th>ประเภทพืช</th>
@@ -217,6 +220,79 @@ function post2farm(path, params, method) {
               <tr class="gradeX">
                 <td style="text-align: center;"><a href="/farm/show/<%= farms[i].id %>"><%= farms[i].title %> <i class="icon-eye-open"></i></a></td>
                 <td style="text-align: center;"><%= farms[i].description %></td>
+                <td style="text-align: center;">
+                  <button id="button-farm-<%= farms[i].id %>-activate" class="btn has-spinner <% if(farms[i].activated == 'false') {%>btn-danger <% }else{ %> btn-success <% } %>"><span class="spinner"><i class="fa fa-refresh fa-spin"></i></span> <% if(farms[i].activated == 'false') {%> <span class="icon-remove"></span> ปิด <% }else{ %><span class="icon-ok"></span> เปิด <% } %></button>
+                  <script>
+                  $("#button-farm-<%= farms[i].id %>-activate").on("click", function(event) {
+                      var $this = $(this);
+                      //event.preventDefault();
+                      BootstrapDialog.show({
+                        message: '<% if(farms[i].activated == 'false') {%>เปิด<% }else{ %>ปิด<% } %>ระบบควบคุมการให้น้ำอัตโนมัติในฟาร์ม<%= farms[i].title %>?',
+                        type: BootstrapDialog.TYPE_WARNING,
+                        buttons: [{
+                            label: 'ยกเลิก',
+                            action: function(dialogRef){
+                                dialogRef.close();
+                                  }
+                                },
+                          {
+                          icon: 'glyphicon glyphicon-check',
+                          label: 'ตกลง',
+                          cssClass: 'btn-warning',
+                          autospin: true,
+                          action: function(dialogRef){
+                              $this.toggleClass('active');
+                              dialogRef.enableButtons(false);
+                              dialogRef.setClosable(false);
+                              dialogRef.getModalBody().html('...กำลังทำการ<% if(farms[i].activated == 'false') {%>เปิด<% }else{ %>ปิด<% } %>ระบบฟาร์ม<%= farms[i].title %>');
+                              var post_url;
+                              <% if(farms[i].watering_scheme == '1') { %>
+                                <% if(farms[i].activated == 'false') { %>
+                                  post_url = "/api/farm/activate1/<%= farms[i].id %>/";
+                                <% } else { %>
+                                  post_url = "/api/farm/deactivate1/<%= farms[i].id %>/";
+                                <% } %>
+                              <% } %>
+                              <% if(farms[i].watering_scheme == '2') { %>
+                                <% if(farms[i].activated == 'false') { %>
+                                  post_url = "/api/farm/activate2/<%= farms[i].id %>/";
+                                <% } else { %>
+                                  post_url = "/api/farm/deactivate2/<%= farms[i].id %>/";
+                                <% } %>
+                              <% } %>
+                              //console.log("Post url => ", post_url);
+                              $.post(post_url, {},
+                                function( response ) {
+                                  if(response == "200")
+                                  {
+                                    dialogRef.close();
+                                    window.location.reload();
+                                  }
+                                  else{
+                                    <% if(farms[i].activated == 'false') { %>
+                                      $.gritter.add({
+                                        title:	'ผิดพลาด',
+                                        text:	'เปิดระบบฟาร์ม<%= farms[i].title %>ไม่สำเร็จ',
+                                        sticky: true
+                                      });
+                                    <% } else { %>
+                                      $.gritter.add({
+                                        title:	'ผิดพลาด',
+                                        text:	'ปิดระบบฟาร์ม<%= farms[i].title %>ไม่สำเร็จ',
+                                        sticky: true
+                                      });
+                                    <% } %>
+                                    $this.toggleClass('active');
+                                    dialogRef.close();
+                                  }
+                              });
+                          }
+                      }]
+
+                      });
+                  });
+                </script>
+                </td>
                 <!--<td style="text-align: center;"><a href="/farm/location/<%= farms[i].id %>" data-toggle="tooltip" title="คลิ๊กเพื่อดูแผนที่"><i class="fas fa-crosshairs"></i></a></td>
                 <td style="text-align: center;"><%= farms[i].soil_title %></td>
                 <td style="text-align: center;"><%= farms[i].plant_title %></td>
@@ -231,7 +307,7 @@ function post2farm(path, params, method) {
                   <% } %>
                 </td>
                 <td style="text-align: center;"><%= farms[i].created_at %></td>-->
-                <td style="text-align: center;">
+                <!--td style="text-align: center;">
                   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
                   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
                   <script src="/_js/bootstrap-confirmation.js"></script>
@@ -263,10 +339,10 @@ function post2farm(path, params, method) {
                     popout: true
                   });
                   </script>
-                </td>
+                </td-->
 
                 <td style="text-align: center;">
-                  <button class="btn btn-sm btn-warning" onclick="post2farm('farm/edit/<%= farms[i].id %>',{});" href="#">แก้ไข</button>
+                  <button class="btn btn-sm btn-warning" onclick="post2farm('/farm/edit/<%= farms[i].id %>',{});" href="#"><i class="icon-edit"></i> แก้ไข</button>
                   <!--<script>
                   $('#editFarmModal').on('show.bs.modal', function () {
                          $(this).find('.modal-body').css({
@@ -279,6 +355,49 @@ function post2farm(path, params, method) {
 
                 </td>
                 <td style="text-align: center;">
+                  <button id="button-farm-<%= farms[i].id %>-delete" class="btn btn-danger"><i class="icon-trash"></i> ลบ</button>
+                  <script>
+                  $("#button-farm-<%= farms[i].id %>-delete").on("click", function(event) {
+                      //event.preventDefault();
+                      BootstrapDialog.show({
+                        message: 'การลบข้อมูลนี้จะไม่สามารถกู้ข้อมูลกลับได้ ดำเนินการลบข้อมูลฟาร์ม<%= farms[i].title %>?',
+                        type: BootstrapDialog.TYPE_WARNING,
+                        buttons: [{
+                            label: 'ยกเลิก',
+                            action: function(dialogRef){
+                                dialogRef.close();
+                                  }
+                                },
+                          {
+                          icon: 'glyphicon glyphicon-check',
+                          label: 'ตกลง',
+                          cssClass: 'btn-warning',
+                          autospin: true,
+                          action: function(dialogRef){
+                              dialogRef.enableButtons(false);
+                              dialogRef.setClosable(false);
+                              dialogRef.getModalBody().html('กำลังทำการลบข้อมูลฟาร์ม<%= farms[i].title %>...');
+                              var post_url = '/api/farm/delete/<%= farms[i].id %>';
+                              //console.log("Post url => ", post_url);
+                              $.post(post_url, {},
+                                function( response ) {
+                                  if(response=="200")
+                                  {
+                                    window.location.reload();
+                                    dialogRef.close();
+                                  }
+                                  else{
+
+                                  }
+                              });
+                          }
+                      }]
+
+                      });
+                  });
+                </script>
+                </td>
+                <!--td style="text-align: center;">
                   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
                   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
                   <script src="/_js/bootstrap-confirmation.js"></script>
@@ -288,7 +407,7 @@ function post2farm(path, params, method) {
                   data-btn-ok-class="btn-success"
                   data-btn-cancel-label="ยกเลิก" data-btn-cancel-icon="glyphicon glyphicon-ban-circle"
                   data-btn-cancel-class="btn-danger"
-                  data-title="ลบข้อมูลฟาร์ม '<%= farms[i].title %>'?" data-content="">ลบ</button>
+                  data-title="ลบข้อมูลฟาร์ม '<%= farms[i].title %>'?" data-content=""><i class="icon-minus-sign"></i> ลบ</button>
                   <script>
                   $('[data-toggle=confirmation]').confirmation({
                     rootSelector: '[data-toggle=confirmation]',
@@ -298,7 +417,7 @@ function post2farm(path, params, method) {
                     popout: true
                   });
                   </script>
-                </td>
+                </td-->
               </tr>
               <% } %>
             </tbody>
@@ -329,11 +448,13 @@ function post2farm(path, params, method) {
 <script src="/_js/jquery.uniform.js"></script>
 <script src="/_js/select2.min.js"></script>
 <script src="/_js/matrix.js"></script>
-<script src="/_js/matrix.form_common.js"></script>
+<script src="/_js/jquery.gritter.min.js"></script>
+<script src="/_js/matrix.interface.js"></script>
+<!--script src="/_js/matrix.form_common.js"></script-->
 <script src="/_js/wysihtml5-0.3.0.js"></script>
 <script src="/_js/jquery.peity.min.js"></script>
 <script src="/_js/bootstrap-wysihtml5.js"></script>
-<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+<!--script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script-->
 <script defer src="https://use.fontawesome.com/releases/v5.0.9/js/all.js" integrity="sha384-8iPTk2s/jMVj81dnzb/iFR2sdA7u06vHJyyLlAd4snFpCl/SnyUjRrbdJsw1pGIl" crossorigin="anonymous"></script>
 <!--<script src="https://cdn.jsdelivr.net/jquery/1.11.3/jquery.min.js"></script>-->
 </body>

@@ -62,14 +62,14 @@ exports.create_a_valve = function(req, res){
       field7: "0",
       field8: "0",
       created_at: _now.format(),
-      onoff1: "false",
+      /*onoff1: "false",
       onoff2: "false",
       onoff3: "false",
       onoff4: "false",
       onoff5: "false",
       onoff6: "false",
       onoff7: "false",
-      onoff8: "false",
+      onoff8: "false", */
       last_datetime_on1: _now.format(),
       last_datetime_on2: _now.format(),
       last_datetime_on3: _now.format(),
@@ -128,14 +128,14 @@ exports.update_a_valve = function(req, res){
     write_api_key: valve_write_api_key,
     //sampling_time: valve_sampling_time,
     //activated: valve
-    onoff1: (req.body.edit_valve_on_off1==undefined ? 'false' : 'true'),
+    /*onoff1: (req.body.edit_valve_on_off1==undefined ? 'false' : 'true'),
     onoff2: (req.body.edit_valve_on_off2==undefined ? 'false' : 'true'),
     onoff3: (req.body.edit_valve_on_off3==undefined ? 'false' : 'true'),
     onoff4: (req.body.edit_valve_on_off4==undefined ? 'false' : 'true'),
     onoff5: (req.body.edit_valve_on_off5==undefined ? 'false' : 'true'),
     onoff6: (req.body.edit_valve_on_off6==undefined ? 'false' : 'true'),
     onoff7: (req.body.edit_valve_on_off7==undefined ? 'false' : 'true'),
-    onoff8: (req.body.edit_valve_on_off8==undefined ? 'false' : 'true'),
+    onoff8: (req.body.edit_valve_on_off8==undefined ? 'false' : 'true'),*/
     last_updated: _now.format()
   });
   res.redirect('/valve');
@@ -189,7 +189,7 @@ exports.delete_a_valve = function(req, res){
   var valve_id = req.body.delete_valve_id;
   console.log("Delete valve => " + valve_id);
   var ref = db.ref('/valve/'+valve_id).remove();
-  res.redirect('../valve');
+  res.redirect('/valve');
 };
 
 exports.delete_a_valve_id = function(req, res){
@@ -197,8 +197,8 @@ exports.delete_a_valve_id = function(req, res){
   console.log("Delete valve by id => " + valve_id);
   var ref = db.ref('/valve/'+valve_id).remove(function(err){
     if(err)
-      return res.send();
-    res.redirect('../../valve');
+      res.render('dashboard/error405.ejs', {});
+    res.redirect('/valve');
   });
 };
 
@@ -326,16 +326,14 @@ exports.turnon_valve = function(req, res){
             else {
               console.log("Turning on valve[" + valve_id + "] failed...");
               //callback(null, 222);
-              res.send({message: "Turning on valve[" + valve_id + "] failed...",
-                        code: 302});
+              res.render('dashboard/error405.ejs', {});
             }
           });
         }
         else {
           //res.send("Error with " + JSON.stringify(resp));
           //callback(null, 333);
-          res.send({message: "Connecting to ThingSpeak failed!!!",
-                    code: 303});
+          res.render('dashboard/error405.ejs', {});
         }
       });
     }
@@ -376,6 +374,7 @@ exports.turnon_valve = function(req, res){
           r.field8 = '1';
           break;
       };
+      r.last_updated = time_now;
       db.ref('/valve').child(valve_id).update(r,function(err){
         console.log("Update time on valve[" + valve_id + "] field #" + valve_field + " is done successfully...");
         callback(null, 1);
@@ -450,14 +449,14 @@ exports.api_turnon_valve = function(req, res){
             else {
               console.log("Turning on valve[" + valve_id + "] field #" + valve_field + " failed...");
               //callback("301", "เปิดวาล์ว[" + valve_id + "] field #" + valve_field + " ไม่สำเร็จ!");
-              res.send("302");
+              res.send("201");
             }
           });
         }
         else {
           //res.send("Error with " + JSON.stringify(resp));
           //callback("302", "ไม่สามารถติดต่อ ThingSpeak.com!");
-          res.send("303");
+          res.send("202");
         }
       });
     },
@@ -497,9 +496,10 @@ exports.api_turnon_valve = function(req, res){
           r.field8 = '1';
           break;
       };
+      r.last_updated = time_now;
       db.ref('/valve').child(valve_id).update(r,function(err){
         console.log("Update time on valve[" + valve_id + "] field #" + valve_field + " is done successfully...");
-        callback(null, "300");
+        callback(null, "200");
       });
     }
     /*,
@@ -526,7 +526,7 @@ exports.api_turnon_valve = function(req, res){
         break;
     }*/
     if(err)
-      res.send("301")
+      res.send("203")
     res.send(successfull);  // turn on valve OK
   });
 };
@@ -589,12 +589,13 @@ exports.api_reset_timer = function(req, res){
       resp.time_on8 = 0;
       break;
   }
-  console.log("resp => ", resp);
+  //console.log("resp => ", resp);
+  resp.last_updated = moment().format();
   db.ref('/valve').child(valve_id).update(resp,function(err){
     if(err)
-      res.send("401");
+      res.send("201");
     console.log("Reset valve[" + valve_id + "] #" + valve_field + " timer...OK");
-    res.send("400");
+    res.send("200");
   });
 }
 
@@ -649,13 +650,13 @@ exports.turnoff_valve = function(req, res){
             }
             else {
               console.log("Turning off valve[" + valve_id + "] field #" + valve_field + " failed...");
-              res.send("321");
+              res.render('dashboard/error405.ejs', {});
             }
           });
         }
         else {
           //res.send("Error with " + JSON.stringify(resp));
-          res.send("322");
+          res.render('dashboard/error405.ejs', {});
         }
       });
     },
@@ -707,7 +708,7 @@ exports.turnoff_valve = function(req, res){
             r.field8 = rr.field8;
             break;
         };
-
+        r.last_updated = time_now;
         db.ref('/valve').child(valve_id).update(r, function(err){
           console.log("Update time off valve[" + valve_id + "] field #" + valve_field + " is done successfully...");
           callback(null, 2);
@@ -727,6 +728,7 @@ exports.turnoff_valve = function(req, res){
   ], function(err, results){
     var moment = require('moment');
     res.render('dashboard/valve/show_valve.ejs', {valve: results, moment: moment});
+    //res.send({valve: results, moment: moment});
   });
 };
 
@@ -781,13 +783,13 @@ exports.api_turnoff_valve = function(req, res){
             }
             else {
               console.log("Turning off valve[" + valve_id + "] field #" + valve_field + " failed...");
-              res.send("322");  // update to ThingSpeak failed
+              res.send("201");  // update to ThingSpeak failed
             }
           });
         }
         else {
           //res.send("Error with " + JSON.stringify(resp));
-          res.send("323");  // read from ThingSpeak failed
+          res.send("202");  // read from ThingSpeak failed
         }
       });
     },
@@ -839,12 +841,12 @@ exports.api_turnoff_valve = function(req, res){
             r.field8 = rr.field8;
             break;
         };
-
+        r.last_updated = time_now;
         db.ref('/valve').child(valve_id).update(r,function(err){
           if(err)
-            res.send("324");  // update Firebase failed
+            res.send("203");  // update Firebase failed
           console.log("Update time off valve[" + valve_id + "] field #" + valve_field + " is done successfully...");
-          callback(null, "320");
+          callback(null, "200");
         });
       });
     }
@@ -860,7 +862,7 @@ exports.api_turnoff_valve = function(req, res){
     }*/
   ], function(err, successfull){
     if(err)
-      res.send("321");
+      res.send("204");
     res.send(successfull);
   });
 };

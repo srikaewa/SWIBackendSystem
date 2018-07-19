@@ -2,7 +2,7 @@
 
 var moment = require('moment');
 const uuidv1 = require('uuid/v1');
-var admin = require("firebase-admin");
+var admin = require("firebase");
 var db = admin.database();
 
 var ThingSpeakClient = require('thingspeakclient');
@@ -90,8 +90,10 @@ exports.list_all_farm = function(req, res) {
     //console.log("Mainpump list => " + JSON.stringify(obj) + " with size of " + obj.length);
     //console.log("farms..............", obj);
     res.render('dashboard/farm/list_farm.ejs', {farms: obj});
+    //res.render('dashboard/error403.ejs', {});
   }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
+    res.render('dashboard/error405.ejs', {});
   });
 };
 
@@ -102,15 +104,10 @@ exports.list_all_farm_type = function(req, res) {
     var obj = snapshotToArray2(snapshot, farm_type);
     //console.log("Mainpump list => " + JSON.stringify(obj) + " with size of " + obj.length);
     //console.log("farms..............", obj);
-    if(farm_type == 1)
-    {
-      res.render('dashboard/farm/list_farm_sensor.ejs', {farms: obj});
-    }else if(farm_type == 2)
-    {
-      res.render('dashboard/farm/list_farm_drip.ejs', {farms: obj});
-    }
+    res.render('dashboard/farm/list_farm.ejs', {farms: obj});
   }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
+    res.render('dashboard/error405.ejs', {});
   });
 };
 
@@ -236,6 +233,7 @@ exports.create_a_farm = function(req, res) {
               watering_scheme: watering_scheme,
               humidity_critical_point: 15,
               humidity_last_checked: farm_created_at,
+              humidity_last_read: "0",
               //humidity_sensor_id: req.body.create_farm_humidity_sensor_id,
               //mainpump_id: req.body.create_farm_mainpump_id,
               //valve_1_id: req.body.create_farm_valve_1_id,
@@ -243,15 +241,17 @@ exports.create_a_farm = function(req, res) {
               sampling_time: "15",
               linegroup_token: req.body.create_farm_linegroup_token,
               activated: 'false',
+              last_activated_at: farm_created_at,
               need_watering: 'false',
               public: 'true',
+              farm_last_checked: farm_created_at,
               created_at: farm_created_at,
               last_updated: farm_created_at
             }, function(err){
               if(err)
-                res.send("703");
+                res.render('dashboard/error405.ejs', {});
               else {
-                res.redirect('../farm');
+                res.redirect('/farm');
               }
             });
             break;
@@ -279,6 +279,7 @@ exports.create_a_farm = function(req, res) {
                 plant_title: selected_plant.title,
                 watering_scheme: watering_scheme,
                 rain_last_checked: farm_created_at,
+                rain_last_read: "0",
                 //mainpump_id: req.body.create_farm_mainpump_id,
                 //valve_1_id: req.body.create_farm_valve_1_id,
                 //valve_2_id: req.body.create_farm_valve_2_id,
@@ -288,13 +289,14 @@ exports.create_a_farm = function(req, res) {
                 alarm_start: "false",
                 alarm_interval: "15",
                 activated: 'false',
+                last_activated_at: farm_created_at,
                 need_watering: 'false',
                 public: 'true',
                 created_at: farm_created_at,
-                last_updated: farm_created_at
+                last_updated: moment().format()
               }, function(err){
                 if(err)
-                  res.send("703");
+                  res.render('dashboard/error405.ejs', {});
                 else {
                   var ETp = require('../../etp/ETp.js');
                   var watering_schedule = ETp.computeWateringSchedule(farm_id, function(ws){
@@ -302,9 +304,9 @@ exports.create_a_farm = function(req, res) {
                       watering_schedule: ws
                     }, function(err){
                         if(err)
-                          res.send("704");
+                          res.render('dashboard/error405.ejs', {});
                         else
-                          res.redirect('../farm');
+                          res.redirect('/farm');
                     });
                   });
                 };
@@ -536,7 +538,7 @@ exports.update_a_farm = function(req, res) {
               last_updated: last_updated
             }, function(err){
               if(err)
-                res.send("703");
+                res.render('dashboard/error405.ejs', {});
               else {
                 //console.log("current edit farm directory => ", __dirname);
                 res.redirect('/farm');
@@ -574,10 +576,10 @@ exports.update_a_farm = function(req, res) {
               alarm_time: req.body.edit_farm_alarm_time,
               alarm_interval: req.body.edit_farm_alarm_interval,
               linegroup_token: req.body.edit_farm_linegroup_token,
-              last_updated: last_updated
+              last_updated: moment().format()
             }, function(err){
               if(err)
-                res.send("703");
+                res.render('dashboard/error405.ejs', {});
               else {
                 var ETp = require('../../etp/ETp.js');
                 var watering_schedule = ETp.computeWateringSchedule(farm_id, function(ws){
@@ -585,7 +587,7 @@ exports.update_a_farm = function(req, res) {
                     watering_schedule: ws
                   }, function(err){
                       if(err)
-                        res.send("704");
+                        res.render('dashboard/error405.ejs', {});
                       else
                         res.redirect('/farm/show/' + farm_id);
                   });
@@ -644,10 +646,10 @@ exports.update_a_farm2 = function(req, res) {
               last_updated: last_updated
             }, function(err){
               if(err)
-                res.send("703");
+                res.render('dashboard/error405.ejs', {});
               else {
                 //console.log("current edit farm directory => ", __dirname);
-                res.redirect('../../farm');
+                res.redirect('/farm');
               }
             });
           break;
@@ -682,10 +684,10 @@ exports.update_a_farm2 = function(req, res) {
               valve_1_id: req.body.edit_farm_valve_1_id,
               valve_2_id: req.body.edit_farm_valve_2_id,
               linegroup_token: req.body.edit_farm_linegroup_token,
-              last_updated: last_updated
+              last_updated: moment().format()
             }, function(err){
               if(err)
-                res.send("703");
+                res.render('dashboard/error405.ejs', {});
               else {
                 var ETp = require('../../etp/ETp.js');
                 var watering_schedule = ETp.computeWateringSchedule(farm_id, function(ws){
@@ -693,9 +695,9 @@ exports.update_a_farm2 = function(req, res) {
                     watering_schedule: ws
                   }, function(err){
                       if(err)
-                        res.send("704");
+                        res.render('dashboard/error405.ejs', {});
                       else
-                        res.redirect('../farm');
+                        res.redirect('/farm');
                   });
                 });
               };
@@ -841,13 +843,578 @@ exports.form_common = function(req, res){
 
 exports.delete_a_farm_id = function(req, res){
   var farm_id = req.params.id;
-  console.log("Delete farm by id => " + farm_id);
   var ref = db.ref('/farm/'+farm_id).remove(function(err){
     if(err)
-      return res.send();
-    res.redirect('../../farm');
+      res.render('dashboard/error405.ejs', {});
+    res.redirect('/farm');
+    console.log("Farm [" + farm_id + "] has been deleted!");
   });
 };
+
+exports.api_delete_a_farm_id = function(req, res){
+  var farm_id = req.params.id;
+  //console.log("Delete farm by id => " + farm_id);
+  var ref = db.ref('/farm/'+farm_id).remove(function(err){
+    if(err)
+    {
+      res.send("201");
+    }
+    else {
+      console.log("Farm [" + farm_id + "] has been deleted!");
+      res.send("200");
+    }
+  });
+};
+
+exports.api_update_farm_title = function(req, res){
+  //console.log("Update farm title recieve => ", req.params);
+  var farm_id = req.params.id;
+  //console.log("Set sampling time of farm[" + farm_id + "] with value = " + sampling_time + " minutes...");
+  var ref = db.ref('/farm/').child(farm_id).update({
+    title: req.params.value,
+    last_updated: moment().format()
+  }, function(err){
+    if(err)
+    {
+      console.log("Update title of farm[" + farm_id + "] with value = " + req.params.value + "...FAILED!");
+      //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
+      res.send("201");
+    }
+    console.log("Update title of farm[" + farm_id + "] with value = " + req.params.value + "...OK!");
+    //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
+    res.send("200");
+  });
+}
+
+exports.api_update_farm_description = function(req, res){
+  //console.log("Update farm title recieve => ", req.params);
+  var farm_id = req.params.id;
+  //console.log("Set sampling time of farm[" + farm_id + "] with value = " + sampling_time + " minutes...");
+  var ref = db.ref('/farm/').child(farm_id).update({
+    description: req.params.value,
+    last_updated: moment().format()
+  }, function(err){
+    if(err)
+    {
+      console.log("Update description of farm[" + farm_id + "] with value = " + req.params.value + "...FAILED!");
+      //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
+      res.send("201");
+    }
+    console.log("Update description of farm[" + farm_id + "] with value = " + req.params.value + "...OK!");
+    //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
+    res.send("200");
+  });
+}
+
+exports.api_update_farm1_location = function(req, res){
+  //console.log("Update farm title recieve => ", req.params);
+  var farm_id = req.params.id;
+  //console.log("Set sampling time of farm[" + farm_id + "] with value = " + sampling_time + " minutes...");
+  var ref = db.ref('/farm/').child(farm_id).update({
+    latitude: req.params.latitude,
+    longitude: req.params.longitude,
+    last_updated: moment().format()
+  }, function(err){
+    if(err)
+    {
+      console.log("Update location of farm[" + farm_id + "] with value = " + req.params.latitude + "," + req.params.longitude + "...FAILED!");
+      //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
+      res.send("201");
+    }
+    console.log("Update location of farm[" + farm_id + "] with value = " + req.params.latitude + "," + req.params.longitude + "...OK!");
+    //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
+    res.send("200");
+  });
+}
+
+exports.api_update_farm2_location = function(req, res){
+  var farm_id = req.params.id;
+  var ref = db.ref('/farm').child(farm_id).update({
+              latitude: req.params.latitude,
+              longitude: req.params.longitude,
+              last_updated: moment().format()
+            }, function(err){
+              if(err)
+              {
+                console.log("Update location of farm[" + farm_id + "] with value = " + req.params.latitude + "," + req.params.longitude + "...FAILED!");
+                res.send("201");
+              }
+              else {
+                var ETp = require('../../etp/ETp.js');
+                var watering_schedule = ETp.computeWateringSchedule(farm_id, function(ws){
+                  ref = db.ref('/farm').child(farm_id).update({
+                    watering_schedule: ws
+                  }, function(err){
+                      if(err)
+                      {
+                        console.log("Update location of farm[" + farm_id + "] with value = " + req.params.latitude + "," + req.params.longitude + "...FAILED!");
+                        res.send("202");
+                      }
+                      else
+                      {
+                        console.log("Update location of farm[" + farm_id + "] with value = " + req.params.latitude + "," + req.params.longitude + "...OK!");
+                        res.send("200");
+                      }
+                  });
+                });
+              };
+            });
+}
+
+exports.api_update_farm2_tape_interval = function(req, res){
+  var farm_id = req.params.id;
+  var ref = db.ref('/farm/' + farm_id);
+  ref.once('value', function(snapshot) {
+    var farm = JSON.parse(JSON.stringify(snapshot));
+    //res.redirect('../farm');
+    //console.log("Edit farm[" + farm_id + "].......................................");
+    farm.id = farm_id;
+    var farm_total_drip_per_rai = Math.floor(1600/(req.params.value*farm.drip_interval));
+    var farm_total_flowrate_per_rai = farm_total_drip_per_rai*farm.drip_flowrate;
+    var ref2 = db.ref('/farm').child(farm_id).update({
+      total_drip_per_rai: farm_total_drip_per_rai,
+      total_flowrate_per_rai: farm_total_flowrate_per_rai,
+      tape_interval: req.params.value,
+      last_updated: moment().format()
+    }, function(err){
+      if(err)
+      {
+        console.log("Update tape interval of farm[" + farm_id + "] with value = " + req.params.value+ "...FAILED!");
+        res.send("201");
+      }
+      else {
+        var ETp = require('../../etp/ETp.js');
+        var watering_schedule = ETp.computeWateringSchedule(farm_id, function(ws){
+          ref = db.ref('/farm').child(farm_id).update({
+            watering_schedule: ws
+          }, function(err){
+              if(err)
+              {
+                console.log("Update tape interval of farm[" + farm_id + "] with value = " + req.params.value+ "...FAILED!");
+                res.send("202");
+              }
+              else
+              {
+                console.log("Update tape interval of farm[" + farm_id + "] with value = " + req.params.value+ "...OK!");
+                res.send("200");
+              }
+          });
+        });
+      };
+    });
+  });
+}
+
+exports.api_update_farm2_drip_interval = function(req, res){
+  var farm_id = req.params.id;
+  var ref = db.ref('/farm/' + farm_id);
+          ref.once('value', function(snapshot) {
+            var farm = JSON.parse(JSON.stringify(snapshot));
+            //res.redirect('../farm');
+            //console.log("Edit farm[" + farm_id + "].......................................");
+            farm.id = farm_id;
+            var farm_total_drip_per_rai = Math.floor(1600/(farm.tape_interval*req.params.value));
+            var farm_total_flowrate_per_rai = farm_total_drip_per_rai*farm.drip_flowrate;
+            //console.log("Farm...." + farm.description);
+            var ref2 = db.ref('/farm').child(farm_id).update({
+              total_drip_per_rai: farm_total_drip_per_rai,
+              total_flowrate_per_rai: farm_total_flowrate_per_rai,
+              drip_interval: req.params.value,
+              last_updated: moment().format()
+            }, function(err){
+              if(err)
+              {
+                console.log("Update drip interval of farm[" + farm_id + "] with value = " + req.params.value+ "...FAILED!");
+                res.send("201");
+              }
+              else {
+                var ETp = require('../../etp/ETp.js');
+                var watering_schedule = ETp.computeWateringSchedule(farm_id, function(ws){
+                  ref = db.ref('/farm').child(farm_id).update({
+                    watering_schedule: ws
+                  }, function(err){
+                      if(err)
+                      {
+                        console.log("Update drip interval of farm[" + farm_id + "] with value = " + req.params.value+ "...FAILED!");
+                        res.send("202");
+                      }
+                      else
+                      {
+                        console.log("Update drip interval of farm[" + farm_id + "] with value = " + req.params.value+ "...OK!");
+                        res.send("200");
+                      }
+                  });
+                });
+              };
+            });
+          });
+}
+
+exports.api_update_farm2_drip_flowrate = function(req, res){
+  var farm_id = req.params.id;
+  var ref = db.ref('/farm/' + farm_id);
+  ref.once('value', function(snapshot) {
+    var farm = JSON.parse(JSON.stringify(snapshot));
+    //res.redirect('../farm');
+    //console.log("Edit farm[" + farm_id + "].......................................");
+    farm.id = farm_id;
+    //var farm_total_drip_per_rai = Math.floor(1600/(farm.tape_interval*farm.drip_interval));
+    var farm_total_flowrate_per_rai = farm.total_drip_per_rai*req.params.value;
+    var ref2 = db.ref('/farm').child(farm_id).update({
+      total_flowrate_per_rai: farm_total_flowrate_per_rai,
+      drip_flowrate: req.params.value,
+      last_updated: moment().format()
+    }, function(err){
+      if(err)
+      {
+        console.log("Update drip flowrate of farm[" + farm_id + "] with value = " + req.params.value+ "...FAILED!");
+        res.send("201");
+      }
+      else {
+        var ETp = require('../../etp/ETp.js');
+        var watering_schedule = ETp.computeWateringSchedule(farm_id, function(ws){
+          ref = db.ref('/farm').child(farm_id).update({
+            watering_schedule: ws
+          }, function(err){
+              if(err)
+              {
+                console.log("Update drip flowrate of farm[" + farm_id + "] with value = " + req.params.value+ "...FAILED!");
+                res.send("202");
+              }
+              else
+              {
+                console.log("Update drip flowrate of farm[" + farm_id + "] with value = " + req.params.value+ "...OK!");
+                res.send("200");
+              }
+          });
+        });
+      };
+    });
+  });
+}
+
+exports.api_update_farm1_soil_id = function(req, res) {
+  var farm_id = req.params.id;
+  var ref = db.ref('/soil');
+  ref.once('value', function(snapshot){
+    var obj2 = JSON.parse(JSON.stringify(snapshot));
+    var selected_soil = obj2[req.params.soil_id];
+
+          var ref = db.ref('/farm').child(farm_id).update({
+              soil_id: req.params.soil_id,
+              soil_title: selected_soil.title_thai,
+              last_updated: moment().format()
+            }, function(err){
+              if(err)
+              {
+                console.log("Update soil id of farm[" + farm_id + "] with value = " + req.params.soil_id + "...FAILED!");
+                res.send("201");
+              }
+              else {
+                console.log("Update soil id of farm[" + farm_id + "] with value = " + req.params.soil_id + "...OK!");
+                res.send("200");
+              };
+            });
+  });
+};
+
+exports.api_update_farm2_soil_id = function(req, res) {
+  var farm_id = req.params.id;
+  var ref = db.ref('/soil');
+  ref.once('value', function(snapshot){
+    var obj2 = JSON.parse(JSON.stringify(snapshot));
+    var selected_soil = obj2[req.params.soil_id];
+
+          var ref = db.ref('/farm').child(farm_id).update({
+              soil_id: req.params.soil_id,
+              soil_title: selected_soil.title_thai,
+              last_updated: moment().format()
+            }, function(err){
+              if(err)
+              {
+                console.log("Update soil id of farm[" + farm_id + "] with value = " + req.params.soil_id + "...FAILED!");
+                res.send("201");
+              }
+              else {
+                var ETp = require('../../etp/ETp.js');
+                var watering_schedule = ETp.computeWateringSchedule(farm_id, function(ws){
+                  ref = db.ref('/farm').child(farm_id).update({
+                    watering_schedule: ws
+                  }, function(err){
+                      if(err)
+                      {
+                        console.log("Update soil id of farm[" + farm_id + "] with value = " + req.params.soil_id + "...FAILED!");
+                        res.send("202");
+                      }
+                      else
+                      {
+                        console.log("Update soil id of farm[" + farm_id + "] with value = " + req.params.soil_id + "...OK!");
+                        res.send("200");
+                      }
+
+                  });
+                });
+              };
+            });
+  });
+};
+
+exports.api_update_farm1_plant_id = function(req, res) {
+  var farm_id = req.params.id;
+  var ref = db.ref('/plant');
+  ref.once('value', function(snapshot){
+    var obj2 = JSON.parse(JSON.stringify(snapshot));
+    var selected_plant = obj2[req.params.plant_id];
+
+          var ref = db.ref('/farm').child(farm_id).update({
+              plant_id: req.params.plant_id,
+              plant_title: selected_plant.title,
+              last_updated: moment().format()
+            }, function(err){
+              if(err)
+              {
+                console.log("Update plant id of farm[" + farm_id + "] with value = " + req.params.plant_id+ "...FAILED!");
+                res.send("201");
+              }
+
+              else {
+                console.log("Update plant id of farm[" + farm_id + "] with value = " + req.params.plant_id+ "...OK!");
+                res.send("200");
+              };
+            });
+  });
+};
+
+exports.api_update_farm2_plant_id = function(req, res) {
+  var farm_id = req.params.id;
+  var ref = db.ref('/plant');
+  ref.once('value', function(snapshot){
+    var obj2 = JSON.parse(JSON.stringify(snapshot));
+    var selected_plant = obj2[req.params.plant_id];
+
+          var ref = db.ref('/farm').child(farm_id).update({
+              plant_id: req.params.plant_id,
+              plant_title: selected_plant.title,
+              last_updated: moment().format()
+            }, function(err){
+              if(err)
+              {
+                console.log("Update plant id of farm[" + farm_id + "] with value = " + req.params.plant_id+ "...FAILED!");
+                res.send("201");
+              }
+
+              else {
+                var ETp = require('../../etp/ETp.js');
+                var watering_schedule = ETp.computeWateringSchedule(farm_id, function(ws){
+                  ref = db.ref('/farm').child(farm_id).update({
+                    watering_schedule: ws
+                  }, function(err){
+                      if(err)
+                      {
+                        console.log("Update plant id of farm[" + farm_id + "] with value = " + req.params.plant_id+ "...FAILED!");
+                        res.send("202");
+                      }
+                      else
+                      {
+                        console.log("Update plant id of farm[" + farm_id + "] with value = " + req.params.plant_id+ "...OK!");
+                        res.send("200");
+                      }
+                  });
+                });
+              };
+            });
+  });
+};
+
+exports.api_update_farm1_starting_date = function(req, res){
+  var farm_id = req.params.id;
+  var ref = db.ref('/farm').child(farm_id).update({
+              starting_date: req.params.value,
+              last_updated: moment().format()
+            }, function(err){
+              if(err)
+              {
+                console.log("Update starting date of farm[" + farm_id + "] with value = " + req.params.value + "...FAILED!");
+                res.send("201");
+              }
+              else {
+                console.log("Update starting date of farm[" + farm_id + "] with value = " + req.params.value+ "...OK!");
+                res.send("200");
+              };
+            });
+}
+
+exports.api_update_farm2_starting_date = function(req, res){
+  var farm_id = req.params.id;
+  var ref = db.ref('/farm').child(farm_id).update({
+              starting_date: req.params.value,
+              last_updated: moment().format()
+            }, function(err){
+              if(err)
+              {
+                console.log("Update starting date of farm[" + farm_id + "] with value = " + req.params.value + "...FAILED!");
+                res.send("201");
+              }              else {
+                var ETp = require('../../etp/ETp.js');
+                var watering_schedule = ETp.computeWateringSchedule(farm_id, function(ws){
+                  ref = db.ref('/farm').child(farm_id).update({
+                    watering_schedule: ws
+                  }, function(err){
+                      if(err)
+                      {
+                        console.log("Update starting date of farm[" + farm_id + "] with value = " + req.params.value+ "...FAILED!");
+                        res.send("202");
+                      }
+                       else
+                       {
+                         console.log("Update starting date of farm[" + farm_id + "] with value = " + req.params.value+ "...OK!");
+                         res.send("200");
+                       }
+                  });
+                });
+              };
+            });
+}
+
+exports.api_update_farm_humidity_sensor_id = function(req, res){
+  //console.log("Update farm title recieve => ", req.params);
+  var farm_id = req.params.id;
+  //console.log("Set sampling time of farm[" + farm_id + "] with value = " + sampling_time + " minutes...");
+  var ref = db.ref('/farm/').child(farm_id).update({
+    humidity_sensor_id: req.params.value,
+    last_updated: moment().format()
+  }, function(err){
+    if(err)
+    {
+      console.log("Update humidity sensor ID of farm[" + farm_id + "] with value = " + req.params.value + "...FAILED!");
+      //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
+      res.send("201");
+    }
+    console.log("Update humidity sensor ID of farm[" + farm_id + "] with value = " + req.params.value + "...OK!");
+    //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
+    res.send("200");
+  });
+}
+
+exports.api_update_farm_rain_sensor_id = function(req, res){
+  //console.log("Update farm title recieve => ", req.params);
+  var farm_id = req.params.id;
+  //console.log("Set sampling time of farm[" + farm_id + "] with value = " + sampling_time + " minutes...");
+  var ref = db.ref('/farm/').child(farm_id).update({
+    rain_sensor_id: req.params.value,
+    last_updated: moment().format()
+  }, function(err){
+    if(err)
+    {
+      console.log("Update rain sensor ID of farm[" + farm_id + "] with value = " + req.params.value + "...FAILED!");
+      //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
+      res.send("201");
+    }
+    console.log("Update rain sensor ID of farm[" + farm_id + "] with value = " + req.params.value + "...OK!");
+    //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
+    res.send("200");
+  });
+}
+
+exports.api_update_farm_mainpump_id = function(req, res){
+  //console.log("Update farm title recieve => ", req.params);
+  var farm_id = req.params.id;
+  //console.log("Set sampling time of farm[" + farm_id + "] with value = " + sampling_time + " minutes...");
+  var ref = db.ref('/farm/').child(farm_id).update({
+    mainpump_id: req.params.value,
+    last_updated: moment().format()
+  }, function(err){
+    if(err)
+    {
+      console.log("Update mainpump ID of farm[" + farm_id + "] with value = " + req.params.value + "...FAILED!");
+      //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
+      res.send("201");
+    }
+    console.log("Update mainpump ID of farm[" + farm_id + "] with value = " + req.params.value + "...OK!");
+    //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
+    res.send("200");
+  });
+}
+
+exports.api_update_farm_valve_1_id = function(req, res){
+  //console.log("Update farm title recieve => ", req.params);
+  var farm_id = req.params.id;
+  //console.log("Set sampling time of farm[" + farm_id + "] with value = " + sampling_time + " minutes...");
+  var ref = db.ref('/farm/').child(farm_id).update({
+    valve_1_id: req.params.value,
+    last_updated: moment().format()
+  }, function(err){
+    if(err)
+    {
+      console.log("Update valve #1 ID of farm[" + farm_id + "] with value = " + req.params.value + "...FAILED!");
+      //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
+      res.send("201");
+    }
+    console.log("Update valve #1 ID of farm[" + farm_id + "] with value = " + req.params.value + "...OK!");
+    //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
+    res.send("200");
+  });
+}
+
+exports.api_update_farm_valve_2_id = function(req, res){
+  //console.log("Update farm title recieve => ", req.params);
+  var farm_id = req.params.id;
+  //console.log("Set sampling time of farm[" + farm_id + "] with value = " + sampling_time + " minutes...");
+  var ref = db.ref('/farm/').child(farm_id).update({
+    valve_2_id: req.params.value,
+    last_updated: moment().format()
+  }, function(err){
+    if(err)
+    {
+      console.log("Update valve #2 ID of farm[" + farm_id + "] with value = " + req.params.value + "...FAILED!");
+      //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
+      res.send("201");
+    }
+    console.log("Update valve #2 ID of farm[" + farm_id + "] with value = " + req.params.value + "...OK!");
+    //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
+    res.send("200");
+  });
+}
+
+exports.api_update_farm2_alarm_interval = function(req, res){
+  //console.log("Update farm title recieve => ", req.params);
+  var farm_id = req.params.id;
+  //console.log("Set sampling time of farm[" + farm_id + "] with value = " + sampling_time + " minutes...");
+  var ref = db.ref('/farm/').child(farm_id).update({
+    alarm_interval: req.params.value,
+    last_updated: moment().format()
+  }, function(err){
+    if(err)
+    {
+      console.log("Update alarm interval of farm[" + farm_id + "] with value = " + req.params.value + "...FAILED!");
+      //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
+      res.send("201");
+    }
+    console.log("Update alarm interval of farm[" + farm_id + "] with value = " + req.params.value + "...OK!");
+    //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
+    res.send("200");
+  });
+}
+
+exports.api_update_farm_linegroup_token = function(req, res){
+  //console.log("Update farm title recieve => ", req.params);
+  var farm_id = req.params.id;
+  //console.log("Set sampling time of farm[" + farm_id + "] with value = " + sampling_time + " minutes...");
+  var ref = db.ref('/farm/').child(farm_id).update({
+    linegroup_token: req.params.value,
+    last_updated: moment().format()
+  }, function(err){
+    if(err)
+    {
+      console.log("Update linegroup token of farm[" + farm_id + "] with value = " + req.params.value + "...FAILED!");
+      //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
+      res.send("201");
+    }
+    console.log("Update linegroup token of farm[" + farm_id + "] with value = " + req.params.value + "...OK!");
+    //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
+    res.send("200");
+  });
+}
 
 var runFarm = function(fo, count)
 {
@@ -879,8 +1446,9 @@ var runFarm = function(fo, count)
             },
             function(callback){
               fo.humidity_last_checked = moment().format();
-              fo.last_updated = fo.created_at;
-              db.ref('/farm').child(fo.farm_id).update({humidity_last_checked: fo.humidity_last_checked, last_updated: fo.last_updated});
+              db.ref('/farm').child(fo.farm_id).update({
+                humidity_last_checked: fo.humidity_last_checked,
+              });
               callback(null, fo);
             }
           ], function(err, results){
@@ -892,14 +1460,18 @@ var runFarm = function(fo, count)
                   line.lineGroupNotify("ความชื้นในแปลงเท่ากับ " + results[1].field1.substring(0,5) + "% มีค่าต่ำกว่าจุดวิกฤต " + fo.humidity_critical_point + "% ณ เวลา " + fo.humidity_last_checked + " แปลงต้องการน้ำสำหรับ" + fo.title, fo.linegroup_token);
                   var ref = db.ref('/farm').child(fo.farm_id).update({
                         need_watering: "true",
-                        humidity_last_checked: _now
+                        humidity_last_read: results[1].field1.substring(0,5),
+                        humidity_last_checked: results[1].created_at,
+                        farm_last_checked: _now
                       });
                 }
                 else {
                   line.lineGroupNotify("ความชื้นในแปลงเท่ากับ " + results[1].field1.substring(0,5) + "% มีค่ามากกว่าจุดวิกฤต " + fo.humidity_critical_point + "% ณ เวลา " + fo.humidity_last_checked + " แปลงไม่ต้องการน้ำสำหรับ" + fo.title, fo.linegroup_token);
                   var ref = db.ref('/farm').child(fo.farm_id).update({
                         need_watering: "false",
-                        humidity_last_checked: _now
+                        humidity_last_read: results[1].field1.substring(0,5),
+                        humidity_last_checked: results[1].created_at,
+                        farm_last_checked: _now
                       });
                 }
           });
@@ -935,8 +1507,11 @@ var runFarm2 = function(fo, count)
             },
             function(callback){
               fo.humidity_last_checked = moment().format();
-              fo.last_updated = fo.created_at;
-              db.ref('/farm').child(fo.farm_id).update({humidity_last_checked: fo.humidity_last_checked, last_updated: fo.last_updated});
+              fo.last_updated = moment().format();
+              db.ref('/farm').child(fo.farm_id).update({
+                humidity_last_checked: fo.humidity_last_checked,
+                last_updated: fo.last_updated
+              });
               callback(null, fo);
             }
           ], function(err, results){
@@ -948,6 +1523,7 @@ var runFarm2 = function(fo, count)
                   line.lineGroupNotify("ความชื้นในแปลงเท่ากับ " + results[1].field1.substring(0,5) + "% มีค่าต่ำกว่าจุดวิกฤต " + fo.humidity_critical_point + "% ณ เวลา " + fo.humidity_last_checked + " แปลงต้องการน้ำสำหรับ" + fo.title, fo.linegroup_token);
                   var ref = db.ref('/farm').child(fo.farm_id).update({
                         need_watering: "true",
+                        humidity_last_read: results[1].field1.substring(0,5),
                         humidity_last_checked: _now
                       });
                 }
@@ -955,6 +1531,7 @@ var runFarm2 = function(fo, count)
                   line.lineGroupNotify("ความชื้นในแปลงเท่ากับ " + results[1].field1.substring(0,5) + "% มีค่ามากกว่าจุดวิกฤต " + fo.humidity_critical_point + "% ณ เวลา " + fo.humidity_last_checked + " แปลงไม่ต้องการน้ำสำหรับ" + fo.title, fo.linegroup_token);
                   var ref = db.ref('/farm').child(fo.farm_id).update({
                         need_watering: "false",
+                        humidity_last_read: results[1].field1.substring(0,5),
                         humidity_last_checked: _now
                       });
                 }
@@ -975,7 +1552,8 @@ exports.activate_farm_1 = function(req, res){
       farmObj.farm_id = farm_id;
       var ref2 = db.ref('/farm/').child(farm_id);
       ref2.update({
-        activated: 'true'
+        activated: 'true',
+        last_activated_at: moment().format()
       }, function(err){
           if(err)
             res.respond("705");
@@ -1033,7 +1611,8 @@ exports.api_activate_farm_1 = function(req, res){
       farmObj.farm_id = farm_id;
       var ref2 = db.ref('/farm/').child(farm_id);
       ref2.update({
-        activated: 'true'
+        activated: 'true',
+        last_activated_at: moment().format()
       }, function(err){
           if(err)
             res.send("1001");
@@ -1067,14 +1646,15 @@ exports.api_activate_farm_1 = function(req, res){
               //console.log("finished activating farm!!!!!!!!!");
               //res.send("start farm[" + farm_id + "]... done!");
               //res.setHeader("Content-Type", "text/html");
-              res.send("1000");
+              console.log("farm[" + farm_id + "] has been activated! @" + time_now);
+              res.send("200");
               //console.log("finished redirecting farm!!!!!!!!!");
         }
       });
     }
   }, function (errorObject) {
       //console.log("Read farm failed: " + errorObject.code);
-      res.send("1002");
+      res.send("202");
     });
 };
 
@@ -1121,7 +1701,8 @@ exports.activate_farm_2 = function(req, res){
       farmObj.farm_id = farm_id;
       var ref2 = db.ref('/farm/').child(farm_id);
       ref2.update({
-        activated: 'true'
+        activated: 'true',
+        last_activated_at: moment().format()
       }, function(err){
           if(err)
             res.respond("705");
@@ -1143,9 +1724,53 @@ exports.activate_farm_2 = function(req, res){
               line.lineGroupNotify("วันนี้ฟาร์ม" + farmObj.title + " ต้องการการให้น้ำเป็นเวลา " + next_w.hours + " ชั่วโมง " + next_w.mins + "นาที @" + time_now, farmObj.linegroup_token);
             }
             else{
-              line.lineGroupNotify("ตารางให้น้ำของฟาร์ม" + farmObj.title + " ครั้งต่อไปอีก " + next_w.days + " วัน @" + next_w.current_date, farmObj.linegroup_token);
-            };
+              var td = moment().format("YYYY-MM-DD");;
+              line.lineGroupNotify("ตารางให้น้ำของฟาร์ม" + farmObj.title + " ครั้งต่อไปอีก " + moment(next_w.current_date).diff(td, 'days') + " วัน @" + next_w.current_date, farmObj.linegroup_token);            };
 
+            // read rain sensor after activate farm
+            var sensorClient = new ThingSpeakClient();
+            var sensor_id = farmObj.rain_sensor_id;
+            var ref = db.ref('/sensor/' + sensor_id);
+            var async = require('async');
+
+            async.series([
+              function(callback){
+                sensorClient.getLastEntryInChannelFeed(parseInt(sensor_id), {}, function(err, resp){
+                  if(typeof resp !== 'undefined')
+                  {
+                    db.ref('/sensor').child(sensor_id).update(resp);
+                    callback(null, resp);
+                  }
+                });
+              },
+              function(callback){
+                ref.once('value', function(snapshot) {
+                  var obj = JSON.parse(JSON.stringify(snapshot));
+                  obj.id = sensor_id;
+                  //res.redirect('../farm');
+                  //console.log("Edit farm[" + farm_id + "].......................................");
+                  callback(null, obj);
+                });
+              }
+            ], function(err, results){
+                //var moment = require('moment');
+                //res.render('dashboard/sensor/show_sensor.ejs', {sensor: results[1], moment: moment});
+                var rtime_now = moment().format();
+                if(results[1].field1 != null)
+                {
+                  console.log("Check rain sensor before alarm the today watering => ", results[1].field1);
+                  line.lineGroupNotify("ปริมาณน้ำฝนในฟาร์ม" + farmObj.title + " เท่ากับ " + results[1].field1 + " มม. @" + rtime_now, farmObj.linegroup_token);
+                  db.ref('/farm').child(farmObj.farm_id).update({
+                    rain_last_checked: results[1].created_at,
+                    rain_last_read: results[1].field1.substring(0,6),
+                    last_updated: rtime_now
+                  });
+                }
+                else {
+                  console.log("Check rain sensor before alarm the today watering => FAILED");
+                  line.lineGroupNotify("ไม่สามารถอ่านค่าเซ็นเซอร์น้ำฝนในฟาร์ม" + farmObj.title + "ได้ @" + rtime_now, farmObj.linegroup_token);
+                }
+            });
 
             var r_schedule = schedule.scheduleJob(rdate, function(){
               // check rain sensor before watering alarm to adjust the amount of watering
@@ -1160,7 +1785,7 @@ exports.activate_farm_2 = function(req, res){
                     if(typeof resp !== 'undefined')
                     {
                       db.ref('/sensor').child(sensor_id).update(resp);
-                      callback(null, 1);
+                      callback(null, resp);
                     }
                   });
                 },
@@ -1181,6 +1806,11 @@ exports.activate_farm_2 = function(req, res){
                   {
                     console.log("Check rain sensor before alarm the today watering => ", results[1].field1);
                     line.lineGroupNotify("ปริมาณน้ำฝนในฟาร์ม" + farmObj.title + " เท่ากับ " + results[1].field1 + " มม. @" + rtime_now, farmObj.linegroup_token);
+                    db.ref('/farm').child(farmObj.farm_id).update({
+                      rain_last_checked: results[1].created_at,
+                      rain_last_read: results[1].field1.substring(0,6),
+                      last_updated: rtime_now
+                    });
                   }
                   else {
                     console.log("Check rain sensor before alarm the today watering => FAILED");
@@ -1202,8 +1832,6 @@ exports.activate_farm_2 = function(req, res){
                   line.lineGroupNotify("ฟาร์ม" + farmObj.title + " ต้องการการให้น้ำเป็นเวลา " + next_w.hours + " ชั่วโมง " + next_w.mins + "นาที @" + time_now, farmObj.linegroup_token);
                   line.lineGroupNotify("กรุณาเปิด mobile application เพื่อควบคุมการให้น้ำหรือปิดการแจ้งเตือนนี้", farmObj.linegroup_token);
 
-
-
                   var alarmIntervalObj = setInterval(function(farm_id, ws){
                     var ref3 = db.ref('/farm/' + farm_id);
                     ref3.once('value', function(snapshot){
@@ -1220,6 +1848,9 @@ exports.activate_farm_2 = function(req, res){
                           //line.lineGroupNotify("ตารางให้น้ำของฟาร์ม" + fo.title + " ครั้งต่อไปอีก " + ws.days + " วัน @" + ws.next_date, fo.linegroup_token);
                           clearInterval(alarmIntervalObj);
                       }
+                      var ref4 = db.ref('/farm').child(fo.farm_id).update({
+                        farm_last_checked: moment().format()
+                      });
                     });
                   }, farm_alarm_interval, farm_id, next_w);
                   // reschedule for the next watering
@@ -1259,7 +1890,8 @@ exports.activate_farm_2 = function(req, res){
       });
     };
   }, function (errorObject) {
-    console.log("Read farm failed: " + errorObject.code);
+      console.log("Read farm failed: " + errorObject.code);
+      res.render('dashboard/error405.ejs', {});
     });
 };
 
@@ -1279,7 +1911,8 @@ exports.api_activate_farm_2 = function(req, res){
       farmObj.farm_id = farm_id;
       var ref2 = db.ref('/farm/').child(farm_id);
       ref2.update({
-        activated: 'true'
+        activated: 'true',
+        last_activated_at: moment().format()
       }, function(err){
           if(err)
             res.respond("1201");
@@ -1301,8 +1934,54 @@ exports.api_activate_farm_2 = function(req, res){
               line.lineGroupNotify("วันนี้ฟาร์ม" + farmObj.title + " ต้องการการให้น้ำเป็นเวลา " + next_w.hours + " ชั่วโมง " + next_w.mins + "นาที @" + time_now, farmObj.linegroup_token);
             }
             else{
-              line.lineGroupNotify("ตารางให้น้ำของฟาร์ม" + farmObj.title + " ครั้งต่อไปอีก " + next_w.days + " วัน @" + next_w.current_date, farmObj.linegroup_token);
+              var td = moment().format("YYYY-MM-DD");;
+              line.lineGroupNotify("ตารางให้น้ำของฟาร์ม" + farmObj.title + " ครั้งต่อไปอีก " + moment(next_w.current_date).diff(td, 'days') + " วัน @" + next_w.current_date, farmObj.linegroup_token);
             }
+
+            // read rain sensor after activate farm
+            var sensorClient = new ThingSpeakClient();
+            var sensor_id = farmObj.rain_sensor_id;
+            var ref = db.ref('/sensor/' + sensor_id);
+            var async = require('async');
+
+            async.series([
+              function(callback){
+                sensorClient.getLastEntryInChannelFeed(parseInt(sensor_id), {}, function(err, resp){
+                  if(typeof resp !== 'undefined')
+                  {
+                    db.ref('/sensor').child(sensor_id).update(resp);
+                    callback(null, resp);
+                  }
+                });
+              },
+              function(callback){
+                ref.once('value', function(snapshot) {
+                  var obj = JSON.parse(JSON.stringify(snapshot));
+                  obj.id = sensor_id;
+                  //res.redirect('../farm');
+                  //console.log("Edit farm[" + farm_id + "].......................................");
+                  callback(null, obj);
+                });
+              }
+            ], function(err, results){
+                //var moment = require('moment');
+                //res.render('dashboard/sensor/show_sensor.ejs', {sensor: results[1], moment: moment});
+                var rtime_now = moment().format();
+                if(results[1].field1 != null)
+                {
+                  console.log("Check rain sensor before alarm the today watering => ", results[1].field1);
+                  line.lineGroupNotify("ปริมาณน้ำฝนในฟาร์ม" + farmObj.title + " เท่ากับ " + results[1].field1 + " มม. @" + rtime_now, farmObj.linegroup_token);
+                  db.ref('/farm').child(farmObj.farm_id).update({
+                    rain_last_checked: results[1].created_at,
+                    rain_last_read: results[1].field1.substring(0,6),
+                    last_updated: rtime_now
+                  });
+                }
+                else {
+                  console.log("Check rain sensor before alarm the today watering => FAILED");
+                  line.lineGroupNotify("ไม่สามารถอ่านค่าเซ็นเซอร์น้ำฝนในฟาร์ม" + farmObj.title + "ได้ @" + rtime_now, farmObj.linegroup_token);
+                }
+            });
 
             var r_schedule = schedule.scheduleJob(rdate, function(){
               // check rain sensor before watering alarm to adjust the amount of watering
@@ -1338,6 +2017,11 @@ exports.api_activate_farm_2 = function(req, res){
                   {
                     console.log("Check rain sensor before alarm the today watering => ", results[1].field1);
                     line.lineGroupNotify("ปริมาณน้ำฝนในฟาร์ม" + farmObj.title + " เท่ากับ " + results[1].field1 + " มม. @" + rtime_now, farmObj.linegroup_token);
+                    db.ref('/farm').child(farmObj.farm_id).update({
+                      rain_last_checked: results[1].created_at,
+                      rain_last_read: results[1].field1.substring(0,6),
+                      last_updated: rtime_now
+                    });
                   }
                   else {
                     console.log("Check rain sensor before alarm the today watering => FAILED");
@@ -1374,6 +2058,9 @@ exports.api_activate_farm_2 = function(req, res){
                           //line.lineGroupNotify("ตารางให้น้ำของฟาร์ม" + fo.title + " ครั้งต่อไปอีก " + ws.days + " วัน @" + ws.next_date, fo.linegroup_token);
                           clearInterval(alarmIntervalObj);
                       }
+                      var ref4 = db.ref('/farm').child(fo.farm_id).update({
+                        farm_last_checked: moment().format()
+                      });
                     });
                   }, farm_alarm_interval, farm_id, next_w);
                   // reschedule for the next watering
@@ -1407,13 +2094,14 @@ exports.api_activate_farm_2 = function(req, res){
               console.log("finished activating farm!!!!!!!!!");
               //res.send("start farm[" + farm_id + "]... done!");
               //res.setHeader("Content-Type", "text/html");
-              res.send("1200");
+              res.send("200");
               //console.log("finished redirecting farm!!!!!!!!!");
         }
       });
     };
   }, function (errorObject) {
       console.log("Read farm failed: " + errorObject.code);
+      res.send("202");
     });
 };
 
@@ -1426,27 +2114,39 @@ exports.api_set_watering_complete = function(req, res){
     watering_complete: true
   }, function(err){
     if(err)
-      res.send("1241");
-    console.log("Update watering complete for farm[" + farm_id + "] at #" + ws);
-    res.send("1240");
+      res.send("201");
+    var ref2 = db.ref('/farm/').child(farm_id).update(
+      {
+        last_updated: moment().format()
+      }, function(err){
+        if(err)
+        {
+          res.send("202");
+        }
+        console.log("Update watering complete for farm[" + farm_id + "] at #" + ws);
+        res.send("200");
+      }
+    );
   });
 }
 
 
 exports.turnon_farm2_alarm = function(req, res){
+  var line = require('../../line/line.js');
   var farm_id = req.params.id;
   var ref = db.ref('/farm/'+farm_id);
   ref.once('value', function(snapshot) {
     var farmObj = JSON.parse(JSON.stringify(snapshot));
     var ref = db.ref('/farm/').child(farm_id).update({
       alarm_start: "true",
-      need_watering: "true"
+      need_watering: "true",
+      last_updated: moment().format()
     }, function(err){
       if(err)
       {
         console.log("Turn on alarm of farm[" + farm_id + "...FAILED!");
         //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
-        res.send("1211");
+        res.render('dashboard/error405.ejs', {});
       }
       console.log("Turn on alarm of farm[" + farm_id + "...OK!");
       line.lineGroupNotify("ปิดการแจ้งเตือนการให้น้ำของฟาร์ม" + farmObj.title, farmObj.linegroup_token);
@@ -1457,6 +2157,7 @@ exports.turnon_farm2_alarm = function(req, res){
 }
 
 exports.turnoff_farm2_alarm = function(req, res){
+  var line = require('../../line/line.js');
   var farm_id = req.params.id;
   var ref = db.ref('/farm/'+farm_id);
   ref.once('value', function(snapshot) {
@@ -1464,13 +2165,14 @@ exports.turnoff_farm2_alarm = function(req, res){
 
     var ref = db.ref('/farm/').child(farm_id).update({
       alarm_start: "false",
-      need_watering: "false"
+      need_watering: "false",
+      last_updated: moment().format()
     }, function(err){
       if(err)
       {
         console.log("Turnoff alarm of farm[" + farm_id + "...FAILED!");
         //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
-        res.send("1221");
+        res.render('dashboard/error405.ejs', {});
       }
       console.log("Turnoff alarm of farm[" + farm_id + "...OK!");
       line.lineGroupNotify("ปิดการแจ้งเตือนการให้น้ำของฟาร์ม" + farmObj.title, farmObj.linegroup_token);
@@ -1489,18 +2191,19 @@ exports.api_turnon_farm2_alarm = function(req, res){
     var farmObj = JSON.parse(JSON.stringify(snapshot));
     var ref = db.ref('/farm/').child(farm_id).update({
       alarm_start: "true",
-      need_watering: "true"
+      need_watering: "true",
+      last_updated: moment().format()
     }, function(err){
       if(err)
       {
         console.log("Turn on alarm of farm[" + farm_id + "...FAILED!");
         //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
-        res.send("1211");
+        res.send("201");
       }
       console.log("Turn on alarm of farm[" + farm_id + "...OK!");
       line.lineGroupNotify("ปิดการแจ้งเตือนการให้น้ำของฟาร์ม" + farmObj.title, farmObj.linegroup_token);
       //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
-      res.send("1210");
+      res.send("200");
     });
 
   });
@@ -1514,38 +2217,41 @@ exports.api_turnoff_farm2_alarm = function(req, res){
     var farmObj = JSON.parse(JSON.stringify(snapshot));
     var ref = db.ref('/farm/').child(farm_id).update({
       alarm_start: "false",
-      need_watering: "false"
+      need_watering: "false",
+      last_updated: moment().format()
     }, function(err){
       if(err)
       {
         console.log("Turnoff alarm of farm[" + farm_id + "...FAILED!");
         //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
-        res.send("1221");
+        res.send("201");
       }
       console.log("Turnoff alarm of farm[" + farm_id + "...OK!");
       line.lineGroupNotify("ปิดการแจ้งเตือนการให้น้ำของฟาร์ม" + farmObj.title, farmObj.linegroup_token);
       //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
-      res.send("1220");
+      res.send("200");
     });
   });
 }
 
-exports.api_set_farm2_alarm = function(req, res){
+exports.api_update_farm2_alarm = function(req, res){
   var farm_id = req.params.id;
+  //var alarm_time = req.params.value.sutstring(0,1) + ":" + req.params.value.sutstring(2,3) + ":00";
   var alarm_time = req.params.value;
   var ref = db.ref('/farm/').child(farm_id).update({
     //alarm_time: alarm_time.substring(0,1) + ":" + alarm_time.substring(2,3) + ":00"
-    alarm_time: alarm_time
+    alarm_time: alarm_time,
+    last_updated: moment().format()
   }, function(err){
     if(err)
     {
-      console.log("Set new alarm of farm[" + farm_id + "...FAILED!");
+      console.log("Set new alarm of farm[" + farm_id + " with value = " + req.params.value + "...FAILED!");
       //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
-      res.send("1231");
+      res.send("201");
     }
-    console.log("Set new alarm of farm[" + farm_id + "...OK!");
+    console.log("Set new alarm of farm[" + farm_id + " with value = " + req.params.value + "...OK!");
     //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
-    res.send("1230");
+    res.send("200");
   });
 }
 
@@ -1554,17 +2260,18 @@ exports.api_set_sampling_time = function(req, res){
   var sampling_time = req.params.value;
   //console.log("Set sampling time of farm[" + farm_id + "] with value = " + sampling_time + " minutes...");
   var ref = db.ref('/farm/').child(farm_id).update({
-    sampling_time: req.params.value
+    sampling_time: req.params.value,
+    last_updated: moment().format()
   }, function(err){
     if(err)
     {
       console.log("Set sampling time of farm[" + farm_id + "] with value = " + sampling_time + " minutes...FAILED!");
       //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
-      res.send("5101");
+      res.send("201");
     }
     console.log("Set sampling time of farm[" + farm_id + "] with value = " + sampling_time + " minutes...OK!");
     //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
-    res.send("5100");
+    res.send("200");
   });
 }
 
@@ -1572,17 +2279,18 @@ exports.api_set_valve1_channel = function(req, res){
   var farm_id = req.params.farm_id;
   //console.log("Set sampling time of farm[" + farm_id + "] with value = " + sampling_time + " minutes...");
   var ref = db.ref('/farm/').child(farm_id).update({
-    valve_1_id: req.params.valve_id
+    valve_1_id: req.params.valve_id,
+    last_updated: moment().format()
   }, function(err){
     if(err)
     {
       console.log("Set valve #1 of farm[" + farm_id + "] with channel = " + req.params.valve_id + " ...FAILED!");
       //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
-      res.send("5201");
+      res.send("201");
     }
     console.log("Set valve #1 of farm[" + farm_id + "] with channel = " + req.params.valve_id + " ...OK!");
     //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
-    res.send("5200");
+    res.send("200");
   });
 }
 
@@ -1590,17 +2298,18 @@ exports.api_set_valve2_channel = function(req, res){
   var farm_id = req.params.farm_id;
   //console.log("Set sampling time of farm[" + farm_id + "] with value = " + sampling_time + " minutes...");
   var ref = db.ref('/farm/').child(farm_id).update({
-    valve_2_id: req.params.valve_id
+    valve_2_id: req.params.valve_id,
+    last_updated: moment().format()
   }, function(err){
     if(err)
     {
       console.log("Set valve #2 of farm[" + farm_id + "] with channel = " + req.params.valve_id + " ...FAILED!");
       //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
-      res.send("5301");
+      res.send("201");
     }
     console.log("Set valve #2 of farm[" + farm_id + "] with channel = " + req.params.valve_id + " ...OK!");
     //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
-    res.send("5300");
+    res.send("200");
   });
 }
 
@@ -1608,17 +2317,18 @@ exports.api_set_humidity_channel = function(req, res){
   var farm_id = req.params.farm_id;
   //console.log("Set sampling time of farm[" + farm_id + "] with value = " + sampling_time + " minutes...");
   var ref = db.ref('/farm/').child(farm_id).update({
-    humidity_sensor_id: req.params.humidity_id
+    humidity_sensor_id: req.params.humidity_id,
+    last_updated: moment().format()
   }, function(err){
     if(err)
     {
       console.log("Set humidity sensor of farm[" + farm_id + "] with channel = " + req.params.humidity_id + " ...FAILED!");
       //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
-      res.send("5401");
+      res.send("201");
     }
     console.log("Set humidity sensor of farm[" + farm_id + "] with channel = " + req.params.humidity_id + " ...OK!");
     //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
-    res.send("5400");
+    res.send("200");
   });
 }
 
@@ -1626,17 +2336,18 @@ exports.api_set_humidity_critical_point = function(req, res){
   var farm_id = req.params.farm_id;
   //console.log("Set sampling time of farm[" + farm_id + "] with value = " + sampling_time + " minutes...");
   var ref = db.ref('/farm/').child(farm_id).update({
-    humidity_critical_point: req.params.value
+    humidity_critical_point: req.params.value,
+    last_updated: moment().format()
   }, function(err){
     if(err)
     {
       console.log("Set humidity critical point of farm[" + farm_id + "] with value = " + req.params.value + " ...FAILED!");
       //res.send('{\"code\":\"500\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์ไม่สำเร็จ\"}');
-      res.send("5501");
+      res.send("201");
     }
     console.log("Set humidity critical point of farm[" + farm_id + "] with value = " + req.params.value + " ...OK!");
     //res.send('{\"code\":\"200\", \"message\":\"ตั้งค่าตรวจสอบเซ็นเซอร์เรียบร้อย\"}');
-    res.send("5500");
+    res.send("200");
   });
 }
 
@@ -1658,10 +2369,11 @@ exports.deactivate_farm_1 = function(req, res){
   var line = require('../../line/line.js');
   var farm_id = req.params.id;
   var ref = db.ref('/farm/').child(farm_id).update({
-    activated: 'false'
+    activated: 'false',
+    last_activated_at: moment().format()
   }, function(err){
     if(err)
-      res.send("706");
+      res.render('dashboard/error405.ejs', {});
     else {
       //console.log("farm[" + farm_id + "] is going to be deactivated...");
       //res.send("farm[" + farm_id + "] has been deactivated...");
@@ -1682,10 +2394,11 @@ exports.api_deactivate_farm_1 = function(req, res){
   var line = require('../../line/line.js');
   var farm_id = req.params.id;
   var ref = db.ref('/farm/').child(farm_id).update({
-    activated: 'false'
+    activated: 'false',
+    last_activated_at: moment().format()
   }, function(err){
     if(err)
-      res.send("1101");
+      res.send("201");
     else {
       //console.log("farm[" + farm_id + "] is going to be deactivated...");
       //res.send("farm[" + farm_id + "] has been deactivated...");
@@ -1696,7 +2409,7 @@ exports.api_deactivate_farm_1 = function(req, res){
         var time_now = moment().format();
         console.log("farm[" + farm_id + "] has been deactivated! @" + time_now);
         line.lineGroupNotify("ปิดระบบฟาร์ม" + farmObj.title + " @" + time_now, farmObj.linegroup_token);
-        res.send("1100");
+        res.send("200");
       });
     }
   });
@@ -1707,10 +2420,11 @@ exports.deactivate_farm_2 = function(req, res){
   var farm_id = req.params.id;
   var ref = db.ref('/farm/').child(farm_id).update({
     activated: 'false',
-    alarm_start: 'false'
+    alarm_start: 'false',
+    last_activated_at: moment().format()
   }, function(err){
     if(err)
-      res.send("1301");
+      res.render('dashboard/error405.ejs', {});
     else {
       //console.log("farm[" + farm_id + "] is going to be deactivated...");
       //res.send("farm[" + farm_id + "] has been deactivated...");
@@ -1732,10 +2446,11 @@ exports.api_deactivate_farm_2 = function(req, res){
   var farm_id = req.params.id;
   var ref = db.ref('/farm/').child(farm_id).update({
     activated: 'false',
-    alarm_start: 'false'
+    alarm_start: 'false',
+    last_activated_at: moment().format()
   }, function(err){
     if(err)
-      res.send("1301");
+      res.send("201");
     else {
       //console.log("farm[" + farm_id + "] is going to be deactivated...");
       //res.send("farm[" + farm_id + "] has been deactivated...");
@@ -1746,7 +2461,7 @@ exports.api_deactivate_farm_2 = function(req, res){
         var time_now = moment().format();
         console.log("farm[" + farm_id + "] has been deactivated! @" + time_now);
         line.lineGroupNotify("ปิดระบบฟาร์ม" + farmObj.title + " @" + time_now, farmObj.linegroup_token);
-        res.send("1300");
+        res.send("200");
       });
     }
   });
@@ -1851,9 +2566,9 @@ exports.create_schedule = function(req, res) {
               created_at: farm_created_at
             }, function(err){
               if(err)
-                res.send("703");
+                res.render('dashboard/error405.ejs', {});
               else {
-                res.redirect('../farm');
+                res.redirect('/farm');
               }
             });
 
@@ -2002,13 +2717,14 @@ exports.update_schedule = function(req, res) {
               valve_2_id: req.body.edit_farm_valve_2_id,
               sampling_time: req.body.edit_farm_sampling_time,
               linegroup_token: req.body.edit_farm_linegroup_token,
-              created_at: farm_created_at
+              created_at: farm_created_at,
+              last_updated: moment().format()
             }, function(err){
               if(err)
-                res.send("703");
+                res.render('dashboard/error405.ejs', {});
               else {
                 //console.log("current edit farm directory => ", __dirname);
-                res.redirect('../../farm');
+                res.redirect('/farm');
               }
             });
           break;
@@ -2043,10 +2759,11 @@ exports.update_schedule = function(req, res) {
               valve_1_id: req.body.edit_farm_valve_1_id,
               valve_2_id: req.body.edit_farm_valve_2_id,
               linegroup_token: req.body.edit_farm_linegroup_token,
-              created_at: farm_created_at
+              created_at: farm_created_at,
+              last_updated: moment().format()
             }, function(err){
               if(err)
-                res.send("703");
+                res.render('dashboard/error405.ejs', {});
               else {
                 var ETp = require('../../etp/ETp.js');
                 var watering_schedule = ETp.computeWateringSchedule(farm_id, function(ws){
@@ -2054,9 +2771,9 @@ exports.update_schedule = function(req, res) {
                     watering_schedule: ws
                   }, function(err){
                       if(err)
-                        res.send("704");
+                        res.render('dashboard/error405.ejs', {});
                       else
-                        res.redirect('../farm');
+                        res.redirect('/farm');
                   });
                 });
               };

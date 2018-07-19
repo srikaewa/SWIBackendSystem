@@ -19,10 +19,73 @@
 <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,800' rel='stylesheet' type='text/css'>
 <!--link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet"-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-</head>
-<body>
+<script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
 <script>
-function post2plant(path, params, method) {
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyB9zKuiyZo-L0STWG86VXB4cVuPMKeWp2Y",
+    authDomain: "swi-high-precision-farm.firebaseapp.com",
+    databaseURL: "https://swi-high-precision-farm.firebaseio.com",
+    projectId: "swi-high-precision-farm",
+    storageBucket: "",
+    messagingSenderId: "141388591700"
+  };
+  firebase.initializeApp(config);
+</script>
+
+<script>
+  var ApplicationUserManaged = (function () {
+      function ApplicationUserManaged() { }
+      ApplicationUserManaged.prototype.UserSignOutOption = function () {
+          firebase.auth().signOut();
+          setTimeout(function () {
+              location.replace("login");
+          }, 1000);
+      }
+      return ApplicationUserManaged;
+  } ());
+  var UserAccount = new ApplicationUserManaged();
+  </script>
+  </head>
+  <body>
+    <script>
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+            // User is signed in.
+            var displayName = user.displayName;
+            var email = user.email;
+            var emailVerified = user.emailVerified;
+            var photoURL = user.photoURL;
+            var uid = user.uid;
+            var phoneNumber = user.phoneNumber;
+            var providerData = user.providerData;
+            user.getIdToken().then(function(accessToken) {
+              document.getElementById('user-email').textContent = email;
+              //document.getElementById('sign-in').textContent = 'Sign out';
+              /*document.getElementById('account-details').textContent = JSON.stringify({
+                displayName: displayName,
+                email: email,
+                emailVerified: emailVerified,
+                phoneNumber: phoneNumber,
+                photoURL: photoURL,
+                uid: uid,
+                accessToken: accessToken,
+                providerData: providerData
+              }, null, '  ');*/
+            });
+          } else {
+            // User is signed out.
+            //document.getElementById('sign-in-status').textContent = 'Signed out';
+            //document.getElementById('sign-in').textContent = 'Sign in';
+            //document.getElementById('account-details').textContent = 'null';
+            window.location = 'login';
+          }
+        }, function(error) {
+          console.log(error);
+        });
+    </script>
+<script>
+function post2user(path, params, method) {
     method = method || "post"; // Set method to post by default if not specified.
 
     // The rest of this code assumes you are not using a library.
@@ -46,7 +109,7 @@ function post2plant(path, params, method) {
     form.submit();
 }
 </script>
-
+<% if(user.role.admin) { %>
 <!--Header-part-->
 <div id="header">
   <h1><a href="/dashboard">Matrix Admin</a></h1>
@@ -92,7 +155,7 @@ function post2plant(path, params, method) {
 
 <div id="sidebar"> <a href="#" class="visible-phone"><i class="icon icon-list"></i></a>
   <ul>
-    <li><a href="/dashboard"><i class="icon icon-home"></i> <span>Dashboard</span></a> </li>
+    <li><a href="dashboard"><i class="icon icon-home"></i> <span>Dashboard</span></a> </li>
     <li class="submenu"><a href="#"><i class="icon icon-leaf"></i></i> <span>รายการฟาร์ม</span><span class="label label-important">3</span></a>
       <ul>
         <li><a href="/farm">ฟาร์มทั้งหมด</a></li>
@@ -109,8 +172,8 @@ function post2plant(path, params, method) {
     </li>
     <!--li> <a href="/valveschedule"><i class="icon icon-th"></i> <span>จัดการเปิดปิดวาล์วน้ำ</span></a> </li-->
     <li> <a href="/soil"><i class="icon icon-globe"></i> <span>จัดการประเภทดิน</span></a> </li>
-    <li class="active"> <a href="/plant"><i class="icon icon-lemon"></i> <span>จัดการประเภทพืช</span></a> </li>
-    <li> <a href="/user"><i class="icon icon-user"></i> <span>จัดการผู้ใช้งาน</span></a> </li>
+    <li> <a href="/plant"><i class="icon icon-lemon"></i> <span>จัดการประเภทพืช</span></a> </li>
+    <li class="active"> <a href="/user"><i class="icon icon-user"></i> <span>จัดการผู้ใช้งาน</span></a> </li>
   </ul>
 </div>
 
@@ -118,55 +181,49 @@ function post2plant(path, params, method) {
 
 <div id="content">
 <div id="content-header">
-  <div id="breadcrumb"> <a href="/dashboard" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a> <a href="/plant" class="tip-bottom">รายการประเภทพืช</a> <a href="#" class="current"> ข้อมูลพืช</a></div>
+  <div id="breadcrumb"> <a href="/dashboard" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a> <a href="/user" class="tip-bottom">รายการบัญชีผู้ใช้งาน</a> <a href="#" class="current">แก้ไขข้อมูล <%= user.displayName %></a></div>
 </div>
 <div class="container-fluid">
   <div class="row-fluid">
-    <div class="span6">
+    <div class="span6">      
+
       <div class="widget-box">
-        <div class="widget-title"> <span class="icon"> <a href="#"><i class="icon-circle-arrow-left" onclick="location.href='/plant'"></i></a></span>
-          <h5>ข้อมูลพืช</h5> </div>
-        <div class="widget-content nopadding">
-          <table class="table table-bordered table-striped">
-<!--            <thead>
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Last Name</th>
-                <th>Username</th>
-              </tr>
-            </thead> -->
-            <tbody>
-              <tr>
-                <td>หมายเลขประเภทพืช</td>
-                <td style="text-align: center;"><%= plant.id %></td>
-              </tr>
-              <tr>
-                <td>ชื่อพืช</td>
-                <td style="text-align: center;"><%= plant.title %></td>
-              </tr>
-              <tr>
-                <td>อายุพืช (สัปดาห์)</td>
-                <td style="text-align: center;"><%= plant.weeks %></td>
-              </tr>
-              <tr>
-                <td>Kc</td>
-                <td style="text-align: center;"><div id="container_kc" style="min-width: 160px; height: 240px; margin: 0 auto"></div></div>
-                </td>
-              </tr>
-              <tr>
-                <td>ความยาวรากพืช</td>
-                <td style="text-align: center;"><div id="container_rootdepth" style="min-width: 160px; height: 240px; margin: 0 auto"></div></div></td>
-              </tr>
-              <tr>
-                <td>แก้ไขล่าสุด</td>
-                <td style="text-align: center;"><%= plant.created_at %></td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="widget-title"> <span class="icon"> <a href="#"><i class="icon-circle-arrow-left" onclick="location.href='/user/show/<%= user.uid %>'"></i></a> </span>
+          <h5>แก้ไขข้อมูลบัญชีผู้ใช้งาน "<%= user.displayName %>"</h5> </div>
+        <div class="widget-content">
+            <form action="/user/update/<%= user.uid %>" method="post" class="form-horizontal">
+              <div class="control-group">
+                  <label class="control-label">UID </label>
+                  <div class="controls">
+                    <input type="text" class="span11" id="edit-user-uid" value="<%= user.uid %>" name="edit_user_uid" readonly>
+                  </div>
+              </div>
+              <div class="control-group">
+                   <label class="control-label">Email</label>
+                   <div class="controls">
+                    <input type="text" class="span11" id="edit-user-email" value="<%= user.email %>" name="edit_user_email" readonly>
+                  </div>
+              </div> 
+              <div class="control-group">
+                  <label class="control-label">ชื่อบัญชีผู้ใช้งาน</label>
+                  <div class="controls">
+                    <input type="text" class="span11" id="edit-user-displayName" value="<%= user.displayName %>" name="edit_user_displayName" readonly>
+                </div>
+             </div> 
+             <div class="control-group">
+                <label class="control-label">สถานะบัญชีผู้ใช้งาน</label>
+                <div class="controls">
+                  <label><input type="checkbox" id="edit-user-activated" name="edit_user_activated" <% if(user.activated){ %>checked<% } %>> Active</label>
+                  <label><input type="checkbox" id="edit-user-admin" name="edit_user_admin" <% if(user.role.admin){ %>checked<% } %>> Admin</label>
+                  <label><input type="checkbox" id="edit-user-farm-manager" name="edit_user_farm_manager" <% if(user.role.farm_manager){ %>checked<% } %>> Farm Manager</label>
+                  <label><input type="checkbox" id="edit-user-farmer" name="edit_user_farmer" <% if(user.role.farmer){ %>checked<% } %>> Farmer</label>
+                </div>
+            </div>         
+            <br>
+            <button type="button" class="btn btn-primary" onclick="location.href='/user/show/<%= user.uid %>'"><i class="icon-minus-sign"></i> ยกเลิก</button> <button type="submit" class="btn btn-warning"><i class="icon-save"></i> บันทึก</button>    
+            </form>           
         </div>
       </div>
-      <button type="button" class="btn btn-primary" onclick="location.href='/plant'"><i class="icon-circle-arrow-left"></i> กลับ</button> <button class="btn btn-sm btn-warning" onclick="post2plant('../edit/<%= plant.id %>',{});" href="#"><i class="icon-edit"></i> แก้ไข</button>
   </div>
 </div>
 </div>
@@ -188,115 +245,21 @@ function post2plant(path, params, method) {
 <script src="/_js/jquery.uniform.js"></script>
 <script src="/_js/masked.js"></script>
 <script src="/_js/select2.min.js"></script>
-<script src="/_js/matrix.form_common.js"></script>
+<!--script src="/_js/matrix.form_common.js"></script-->
 <script src="/_js/matrix.js"></script>
 <script src="/_js/wysihtml5-0.3.0.js"></script>
 <script src="/_js/jquery.peity.min.js"></script>
 <script src="/_js/bootstrap-wysihtml5.js"></script>
 <!--script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script-->
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/export-data.js"></script>
 <!--<script src="https://cdn.jsdelivr.net/jquery/1.11.3/jquery.min.js"></script>-->
 <script>
 	$('.textarea_editor').wysihtml5();
 </script>
-<script>
-Highcharts.chart('container_kc', {
-    chart: {
-        type: 'column'
-    },
-    title: {
-        text: 'Kc'
-    },
-    subtitle: {
-        text: 'Source: Suranaree University of Technology'
-    },
-    xAxis: {
-        categories: [
-            <% for(i=1;i<=plant.weeks;i++) { %>
-              <%= i %>,
-            <% } %>
-        ],
-        crosshair: true
-    },
-    yAxis: {
-        min: 0,
-        title: {
-            text: 'Kc'
-        }
-    },
-    tooltip: {
-        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-            '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
-        footerFormat: '</table>',
-        shared: true,
-        useHTML: true
-    },
-    plotOptions: {
-        column: {
-            pointPadding: 0.2,
-            borderWidth: 0
-        }
-    },
-    series: [{
-        name: '<%= plant.title %>',
-        data: [<% for(var i=0;i<plant.weeks;i++) { %>
-          <%= plant.kc[i] %>,
-          <% } %>
-        ]
-    }]
-});
-</script>
-<script>
-Highcharts.chart('container_rootdepth', {
-    chart: {
-        type: 'column'
-    },
-    title: {
-        text: 'ความยาวรากพืช'
-    },
-    subtitle: {
-        text: 'Source: Suranaree University of Technology'
-    },
-    xAxis: {
-        categories: [
-            <% for(i=1;i<=plant.weeks;i++) { %>
-              <%= i %>,
-            <% } %>
-        ],
-        crosshair: true
-    },
-    yAxis: {
-        min: 0,
-        title: {
-            text: 'ความยาวรากพืช'
-        }
-    },
-    tooltip: {
-        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-            '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
-        footerFormat: '</table>',
-        shared: true,
-        useHTML: true
-    },
-    plotOptions: {
-        column: {
-            pointPadding: 0.2,
-            borderWidth: 0
-        }
-    },
-    series: [{
-        name: '<%= plant.title %>',
-        data: [<% for(var i=0;i<plant.weeks;i++) { %>
-          <%= plant.root_depth[i] %>,
-          <% } %>
-        ]
-    }]
-});
-</script>
 <!--<script src="http://wzrd.in/standalone/uuid%2Fv1@latest"></script>-->
+<% } else { %>
+  <div class="alert alert-warning">
+    <strong><i class="fa fa-warning"></i> Warning!</strong> Authorized user only! Go <a href="javascript:history.back()" class="alert-link">back</a> to previous page.
+  </div>
+<% } %>
 </body>
 </html>

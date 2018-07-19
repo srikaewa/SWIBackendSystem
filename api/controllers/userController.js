@@ -4,12 +4,10 @@ var moment = require('moment');
 const uuidv1 = require('uuid/v1');
 
 var firebase = require('firebase');
-
-//require('firebase/auth');
-//var admin = require('firebase-admin');
+//var firebase_config = require('../../scripts/firebase_config');
 
   // Initialize Firebase
-  var config = {
+var config = {
     apiKey: "AIzaSyB9zKuiyZo-L0STWG86VXB4cVuPMKeWp2Y",
     authDomain: "swi-high-precision-farm.firebaseapp.com",
     databaseURL: "https://swi-high-precision-farm.firebaseio.com",
@@ -35,7 +33,7 @@ function snapshotToArray(snapshot) {
 
     snapshot.forEach(function(childSnapshot) {
         var item = childSnapshot.val();
-        item.id = childSnapshot.key;
+        item.uid = childSnapshot.key;
 
         returnArr.push(item);
     });
@@ -43,20 +41,6 @@ function snapshotToArray(snapshot) {
     return returnArr;
 };
 
-function snapshotToArray2(snapshot, type) {
-    var returnArr = [];
-
-    snapshot.forEach(function(childSnapshot) {
-        var item = childSnapshot.val();
-        if(item.watering_scheme == type)
-        {
-          item.id = childSnapshot.key;
-          returnArr.push(item);
-        }
-    });
-
-    return returnArr;
-};
 
 // Get a reference to the database service
 var db = admin.database();
@@ -68,8 +52,8 @@ exports.update_user = function(req, res){
 
   async.series([
     function(callback){
-      var ref = db.ref('/users/'+req.params.uid);
-      console.log("Try reading user ====> " + ref);
+      var ref = db.ref('/users/' + req.params.uid);
+      //console.log("Try reading user ====> " + ref);
       ref.once('value', function(snapshot){
         var userObj = JSON.parse(JSON.stringify(snapshot));
         //console.log("User snapshot => ", userObj);
@@ -84,20 +68,21 @@ exports.update_user = function(req, res){
           //photoURL: req.params.photoURL,
           displayName: req.params.displayName,
           created_at: moment().format(),
-          activated: 'true',
+          activated: true,
+          last_updated: moment().format(),
           role: {
-            admin: 'false',
-            user: 'true',
-            farmer: 'false',
-            farm_manager: 'false'
+            admin: false,
+            user: true,
+            farmer: false,
+            farm_manager: false
           }
         });
     }else {
       var ref = db.ref('/users').child(req.params.uid).update({
         email: req.params.email,
-        //photoURL: req.params.photoURL,
         displayName: req.params.displayName,
-        last_logged_in: moment().format()
+        last_logged_in: moment().format(),
+        last_updated: moment().format()
       });
     };
     res.render('dashboard/index.ejs',{});
@@ -154,7 +139,7 @@ exports.list_all_users = function(req, res){
 
          if (listUsersResult.pageToken) {
            // List next batch of users.
-           //console.log("user", listUsersResult.users);
+           console.log("user", listUsersResult.users);
            res.render('dashboard/user/list_user.ejs',{users: listUsersResult.users});
            listAllUsers(listUsersResult.pageToken);
            //console.log("listUsersResult3 length => ", Object.keys(listUsersResult).length);
@@ -170,6 +155,67 @@ exports.list_all_users = function(req, res){
   listAllUsers();
 };
 
+exports.list_all_users_2 = function(req, res){
+  var ref = db.ref('/users');
+  //console.log("Try reading user ====> " + ref);
+  ref.once('value', function(snapshot){
+    var userObj = snapshotToArray(snapshot);
+    //console.log("User snapshot => ", userObj);
+    //res.send("200");
+    res.render('dashboard/user/list_user.ejs',{users: userObj});
+  });
+}
+
 exports.create_a_user = function(req, res){
 
+};
+
+exports.show_a_user = function(req, res){
+  var uid = req.params.uid;
+  var ref = db.ref('/users/' + uid);
+  ref.once('value', function(snapshot) {
+    var obj = JSON.parse(JSON.stringify(snapshot));
+    obj.uid = uid;
+    var moment = require('moment');
+    res.render('dashboard/user/show_user.ejs', {user: obj, moment: moment});
+  });
+}
+
+exports.api_delete_a_user = function(req, res){
+  var uid = req.params.uid;
+  var ref = db.ref('/users/'+ uid).remove(function(err){
+    if(err)
+    {
+      console.log("Deleting user " + uid + "...FAILED!");
+      res.send("201");
+    }
+    console.log("Deleting user " + uid + "...OK");
+    res.send('200');
+  });
+};
+
+exports.edit_a_user = function(req, res){
+  var uid = req.params.uid;
+  var ref = db.ref('/users/' + uid);
+  ref.once('value', function(snapshot) {
+    var obj = JSON.parse(JSON.stringify(snapshot));
+    obj.uid = uid;
+    var moment = require('moment');
+    res.render('dashboard/user/edit_user.ejs', {user: obj, moment: moment});
+  });
+}
+
+exports.update_a_user = function(req, res){
+  var uid = req.params.uid;
+  //console.log(uid + " ====> ", Boolean(req.body.edit_user_activated));
+  var ref = db.ref('/users').child(uid).update({
+    activated: Boolean(req.body.edit_user_activated),
+    role: {
+      admin: Boolean(req.body.edit_user_admin),
+      farm_manager: Boolean(req.body.edit_user_farm_manager),
+      farmer: Boolean(req.body.edit_user_farmer)
+    },
+    last_updated: moment().format()
+  });
+  res.redirect('/user/show/' + uid);
 };

@@ -22,6 +22,7 @@ var path = require('path');
 //app.use(express.static(dir);
 //app.use('/js',express.static(path.join(__dirname, './js')));
 //console.log("home directory => ", __dirname);
+app.use('/_scripts',express.static(path.join(__dirname,'/scripts')))
 app.use('/_dashboard',express.static(path.join(__dirname,'/views/dashboard')))
 app.use('/_js',express.static(path.join(__dirname,'/views/dashboard/js')));
 app.use('/_css',express.static(path.join(__dirname,'/views/dashboard/css')));
@@ -43,8 +44,8 @@ app.get('/login', (req, res) => {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-require('./api/routes/homeRoutes')(app);
 require('./api/routes/userRoutes')(app);
+require('./api/routes/homeRoutes')(app);
 require('./api/routes/farmDetailRoutes')(app); //importing route
 require('./api/routes/soilRoutes')(app);
 require('./api/routes/mainpumpRoutes')(app);

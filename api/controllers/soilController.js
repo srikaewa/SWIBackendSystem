@@ -86,7 +86,7 @@ exports.create_a_soil = function(req, res) {
       water_allowance: soil_water_allowance,
       created_at: created_at.format()
     });
-  res.redirect('../soil');
+  res.redirect('/soil');
 };
 
 exports.edit_a_soil = function(req, res){
@@ -117,7 +117,7 @@ exports.update_a_soil = function(req, res){
     water_allowance: soil_water_allowance,
     created_at: created_at.format()
   });
-  res.redirect('../soil');
+  res.redirect('/soil');
 };
 
 exports.show_soil = function(req, res){
@@ -138,7 +138,7 @@ exports.delete_a_soil_id = function(req, res){
   console.log("Delete soil by id => " + soil_id);
   var ref = db.ref('/soil/'+soil_id).remove(function(err){
     if(err)
-      return res.send();
-    res.redirect('../../soil');
+      res.render('dashboard/error405.ejs', {});
+    res.redirect('/soil');
   });
 };

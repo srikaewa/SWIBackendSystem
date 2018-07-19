@@ -160,7 +160,7 @@ exports.delete_a_sensor = function(req, res){
   var sensor_id = req.body.delete_sensor_id;
   console.log("Delete sensor => " + sensor_id);
   var ref = db.ref('/sensor/'+sensor_id).remove();
-  res.redirect('../sensor');
+  res.redirect('/sensor');
 };
 
 exports.delete_a_sensor_id = function(req, res){
@@ -168,8 +168,8 @@ exports.delete_a_sensor_id = function(req, res){
   console.log("Delete sensor by id => " + sensor_id);
   var ref = db.ref('/sensor/'+sensor_id).remove(function(err){
     if(err)
-      return res.send();
-    res.redirect('../../sensor');
+      res.render('dashboard/error405.ejs', {});
+    res.redirect('/sensor');
   });
 };
 
